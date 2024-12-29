@@ -5,19 +5,25 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.*;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.cache.annotation.Cacheable;
 
 @RestController
 public class Controller {
     Dotenv dotenv = Dotenv.load();
     String alpha_advantage_key = dotenv.get("alpha_advantage_key");
 
-    private Map<String, Object> fetchDailyApi(String symbol) {
+    @Cacheable(value = "dailyApi", key = "#symbol", unless = "#result == null or !#result.containsKey('Meta Data')")
+    public Map<String, Object> fetchDailyApi(String symbol) {
         try {
-            String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + symbol
-                    + "&outputsize=full&apikey=" +
-                    alpha_advantage_key;
+            // String url =
+            // "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" +
+            // symbol + "&outputsize=full&apikey=" + alpha_advantage_key;
+            System.out.println(symbol);
+            String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo";
+
             RestTemplate restTemplate = new RestTemplate();
             Map<String, Object> result = restTemplate.getForObject(url, Map.class);
+            System.out.println("after");
 
             return result;
         } catch (Exception e) {
@@ -36,7 +42,6 @@ public class Controller {
     @GetMapping("/api/currentprice")
     private String[] getCurrentPrice(String symbol) {
         try {
-
             String[] result_array = new String[2];
 
             Map<String, Object> response = fetchDailyApi(symbol);
@@ -103,7 +108,7 @@ public class Controller {
     @GetMapping("/api/pricenow")
     private String getPriceNow() {
         try {
-            String symbol = "NVDA";
+            String symbol = "IBM";
             String date = "1990-03-06";
             double amountInvested = 1000.0;
 
