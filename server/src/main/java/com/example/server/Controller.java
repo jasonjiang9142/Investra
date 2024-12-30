@@ -2,7 +2,10 @@ package com.example.server;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.cache.annotation.Cacheable;
@@ -17,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class Controller {
 
     @Cacheable(value = "dailyApi", key = "#symbol", unless = "#result == null or !#result.containsKey('Meta Data')")
@@ -110,13 +114,21 @@ public class Controller {
     // api to get the price now given that specific date. Input the specific date
     // and the money invested into that date
     @GetMapping("/api/pricenow")
-    private String getPriceNow() {
-        try {
-            String symbol = "IBM";
-            String input_date = "1990-03-06";
-            double amountInvested = 1000.0;
+    public ResponseEntity<Map<String, Object>> getPriceNow(
+            @RequestParam String symbol, // Extract 'symbol' from query params
+            @RequestParam String date, // Extract 'input_date' from query params
+            @RequestParam double amount // Extract 'amountInvested' from query params
 
-            String[] datedArray = getDatedPrice(symbol, input_date);
+    ) {
+        try {
+
+            // String symbol = "IBM";
+            // String input_date = "1990-03-06";
+            // double amountInvested = 1000.0;
+
+            System.out.println(symbol);
+
+            String[] datedArray = getDatedPrice(symbol, date);
             String[] currentArray = getCurrentPrice(symbol);
 
             // Parse the price strings into doubles for further calculation (if needed)
@@ -131,11 +143,17 @@ public class Controller {
 
             // Calculate the return on investment based on the prices
             double returnOnInvestment = (currentPriceValue - previousPriceValue)
-                    * (amountInvested / previousPriceValue);
+                    * (amount / previousPriceValue);
 
-            return "The return on investment is: " + returnOnInvestment;
+            return ResponseEntity.ok(Map.of(
+                    "returnOnInvestment", returnOnInvestment,
+                    "previousPrice", previousPriceValue,
+                    "currentPrice", currentPriceValue,
+                    "previousDate", previousDate,
+                    "currentDate", currentDate));
+
         } catch (Exception e) {
-            return "Failed to fetch data: " + e.getMessage();
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
