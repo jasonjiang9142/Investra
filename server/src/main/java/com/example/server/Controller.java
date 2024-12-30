@@ -6,17 +6,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 public class Controller {
-    Dotenv dotenv = Dotenv.load();
-    String alpha_advantage_key = dotenv.get("alpha_advantage_key");
 
     @Cacheable(value = "dailyApi", key = "#symbol", unless = "#result == null or !#result.containsKey('Meta Data')")
     public Map<String, Object> fetchDailyApi(String symbol) {
         try {
+            Dotenv dotenv = Dotenv.load();
+            String alpha_advantage_key = dotenv.get("alpha_advantage_key");
+
             // String url =
             // "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" +
             // symbol + "&outputsize=full&apikey=" + alpha_advantage_key;
@@ -198,6 +206,108 @@ public class Controller {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Failed to fetch data: " + e.getMessage());
             return errorResponse;
+        }
+    }
+
+    // ----------------- API to get company information-----------------
+
+    // api to get most recent news about the company
+    @GetMapping("/api/info/news")
+    private ResponseEntity<?> getNews(String symbol) {
+        try {
+            Dotenv dotenv = Dotenv.load();
+            String finnhub_token = dotenv.get("finnhub_token");
+
+            symbol = "IBM";
+
+            // Get the current date and 3 months ago date
+            LocalDate currentDate = LocalDate.now();
+            LocalDate oneWeekAgo = currentDate.minusWeeks(2);
+
+            // Format the dates to the required format (yyyy-MM-dd)
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String fromDate = oneWeekAgo.format(formatter);
+            String toDate = currentDate.format(formatter);
+
+            System.out.println(finnhub_token);
+
+            // Build the URL dynamically with the from and to dates
+            String url = "https://finnhub.io/api/v1/company-news?symbol=" + symbol
+                    + "&from=" + fromDate + "&to=" + toDate + "&token=" + finnhub_token;
+
+            System.out.println(url);
+
+            // Create RestTemplate instance to make the API request
+
+            RestTemplate restTemplate = new RestTemplate();
+            List<Map<String, Object>> newsData = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Map<String, Object>>>() {
+                    }).getBody();
+
+            return ResponseEntity.ok(newsData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"An error occurred: " + e.getMessage() + "\"}");
+        }
+    }
+
+    // api to get company profile
+    @GetMapping("/api/info/profile")
+    private ResponseEntity<?> getProfile(String symbol) {
+        try {
+            Dotenv dotenv = Dotenv.load();
+            String finnhub_token = dotenv.get("finnhub_token");
+
+            symbol = "IBM";
+
+            // Build the URL dynamically with the from and to dates
+            String url = "https://finnhub.io/api/v1/stock/profile2?symbol=" + symbol + "&token=" + finnhub_token;
+
+            System.out.println(url);
+
+            // Create RestTemplate instance to make the API request
+            RestTemplate restTemplate = new RestTemplate();
+            Map<String, Object> profileData = restTemplate.getForObject(url, Map.class);
+
+            return ResponseEntity.ok(profileData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"An error occurred: " + e.getMessage() + "\"}");
+        }
+    }
+
+    // api to get company metrics
+    @GetMapping("/api/info/metrics")
+    private ResponseEntity<?> getMetrics(String symbol) {
+        try {
+            Dotenv dotenv = Dotenv.load();
+            String finnhub_token = dotenv.get("finnhub_token");
+
+            symbol = "IBM";
+
+            // Build the URL dynamically with the from and to dates
+            String url = "https://finnhub.io/api/v1/stock/metric?symbol=" + symbol + "&metric=all&token="
+                    + finnhub_token;
+
+            System.out.println(url);
+
+            // Create RestTemplate instance to make the API request
+            RestTemplate restTemplate = new RestTemplate();
+            Map<String, Object> metricsData = restTemplate.getForObject(url, Map.class);
+
+            return ResponseEntity.ok(metricsData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"An error occurred: " + e.getMessage() + "\"}");
         }
     }
 
