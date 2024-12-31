@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
+import StockChart from "./stockchart";
 
 import {
   Form,
@@ -146,8 +147,9 @@ export function DatePickerForm() {
 
       if (price_progression_response.ok) {
         const data = await price_progression_response.json();
-        console.log(data);
+
         const priceProgressionDates = data.dates.reverse();
+        console.log(data.dates);
         const priceProgressionRois = data.rois.reverse();
 
         setPriceProgressionDates(priceProgressionDates);
@@ -371,12 +373,17 @@ export function DatePickerForm() {
 
       <p>------------</p>
 
+
       <div>
         {priceProgressionDates && priceProgressionRois ? (
           <div>
-            <h1>Price Progression</h1>
-            <p>Price Progression Dates: {priceProgressionDates}</p>
-            <p>Price Progression Rois: {priceProgressionRois}</p>
+            {/* <div>
+              <h1>Price Progression</h1>
+              <p>Price Progression Dates: {priceProgressionDates}</p>
+              <p>Price Progression Rois: {priceProgressionRois}</p>
+            </div> */}
+
+            <StockChart priceProgressionDates={priceProgressionDates} priceProgressionRois={priceProgressionRois} />
           </div>
         ) : (
           <div>
