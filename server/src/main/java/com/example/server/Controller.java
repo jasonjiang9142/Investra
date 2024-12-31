@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -157,18 +158,14 @@ public class Controller {
         }
     }
 
-    // Helper method to check if a date is within the specified range
     private boolean isWithinDateRange(String date, String startDate, String endDate) {
         try {
-            // Convert the string dates into Date objects for comparison
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date currentDate = sdf.parse(date);
-            Date start = sdf.parse(startDate);
-            Date end = sdf.parse(endDate);
+            LocalDate currentDate = LocalDate.parse(date);
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
 
-            // Return true if the current date is within the range
-            return !currentDate.before(start) && !currentDate.after(end);
-        } catch (ParseException e) {
+            return !currentDate.isBefore(start) && !currentDate.isAfter(end);
+        } catch (DateTimeParseException e) {
             e.printStackTrace();
             return false;
         }
@@ -176,12 +173,16 @@ public class Controller {
 
     // api to get 2 list of the progression of prices over the years
     @GetMapping("/api/priceprogression")
-    private Map<String, Object> getPriceProgression() {
+    public ResponseEntity<Map<String, Object>> getPriceProgression(
+            @RequestParam String startDate,
+            @RequestParam String endDate,
+            @RequestParam double amountInvested,
+            @RequestParam String symbol) {
         try {
-            String startDate = "1999-11-01";
-            String endDate = "2024-12-27";
-            double amountInvested = 1000.0;
-            String symbol = "IBM";
+            // String startDate = "1999-11-01";
+            // String endDate = "2024-12-27";
+            // double amountInvested = 1000.0;
+            // String symbol = "IBM";
 
             List<String> dates = new ArrayList<>();
             List<Double> rois = new ArrayList<>();
@@ -209,21 +210,27 @@ public class Controller {
                     // Add the date and the calculated ROI to the lists
                     dates.add(date);
                     rois.add(returnOnInvestment);
+
                 }
             }
-
             // Create a response map containing dates and calculated ROIs
-            Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("dates", dates);
-            responseMap.put("rois", rois);
+            System.out.println("dates: " + dates);
+            System.out.println("rois: " + rois);
 
-            return responseMap;
+            Map<String, Object> result = new HashMap<>();
+            result.put("dates", dates);
+            result.put("rois", rois);
+
+            return ResponseEntity.ok(result);
 
         } catch (Exception e) {
             e.printStackTrace();
+
+            // Create error response with 500 status
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Failed to fetch data: " + e.getMessage());
-            return errorResponse;
+
+            return ResponseEntity.status(500).body(errorResponse);
         }
     }
 

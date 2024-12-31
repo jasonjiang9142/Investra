@@ -1,6 +1,6 @@
 import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
 
 import {
   Form,
@@ -41,46 +42,126 @@ const FormSchema = z.object({
 });
 
 export function DatePickerForm() {
+  // date for the return on investment
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [currentPrice, setCurrentPrice] = useState(null);
+  const [previousPrice, setPreviousPrice] = useState(null);
+  const [returnOnInvestment, setReturnOnInvestment] = useState(null);
+  const [amount, setAmount] = useState(null);
+  const [stockSymbol, setStockSymbol] = useState(null);
+
+  // date for the price progression 
+  const [priceProgressionDates, setPriceProgressionDates] = useState(null);
+  const [priceProgressionRois, setPriceProgressionRois] = useState(null);
+
+
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
   });
 
   // Handling form submission
-  const onSubmit = async (data) => {
-    console.log(data); // This will print the validated form data
-    const date = format(data.date, "yyyy-MM-dd");
-    const amount = data.amount;
-    const stockSymbol = data.stockSymbol;
+  const onSubmit = async (form_input) => {
+    console.log(form_input); // This will print the validated form data
+    const date = format(form_input.date, "yyyy-MM-dd");
+    const amount = form_input.amount;
+    const stockSymbol = form_input.stockSymbol;
 
-    const queryParams = {
-      symbol: stockSymbol,
-      date: date,
-      amount: amount,
-    }
+    setAmount(amount);
+    setStockSymbol(stockSymbol);
 
-    const queryString = new URLSearchParams(queryParams).toString();
-    console.log(queryString);
 
     try {
-      const response = await fetch(`${backendurl}/api/pricenow?${queryString}`, {
+      const get_price_now = async () => {
+        const queryParams = {
+          symbol: stockSymbol,
+          date: date,
+          amount: amount,
+        }
+
+        const queryString = new URLSearchParams(queryParams).toString();
+
+        const price_now_response = await fetch(`${backendurl}/api/pricenow?${queryString}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        if (price_now_response.ok) {
+          const data = await price_now_response.json();
+          console.log(data);
+          setStartDate(data.previousDate);
+          setEndDate(data.currentDate);
+          setCurrentPrice(data.currentPrice);
+          setPreviousPrice(data.previousPrice);
+          setReturnOnInvestment(data.returnOnInvestment);
+
+
+        } else {
+          const errorData = await price_now_response.text();
+          console.log("Error:", errorData);
+        }
+      }
+
+      await get_price_now();
+
+    } catch (e) {
+      console.log(e)
+    }
+
+  };
+
+  useEffect(() => {
+    console.log("Current Price: ", currentPrice)
+    console.log("Previous Price: ", previousPrice)
+    console.log("Return on Investment: ", returnOnInvestment)
+
+    const get_price_progression = async () => {
+      const queryParams = {
+        startDate: startDate,
+        endDate: endDate,
+        amountInvested: amount,
+        symbol: stockSymbol
+      }
+
+      const queryString = new URLSearchParams(queryParams).toString();
+      console.log(`${backendurl}/api/priceprogression?${queryString}`)
+
+      const price_progression_response = await fetch(`${backendurl}/api/priceprogression?${queryString}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       })
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-      }
 
-    } catch (e) {
-      console.log(e)
+      if (price_progression_response.ok) {
+        const data = await price_progression_response.json();
+        console.log(data);
+        const priceProgressionDates = data.dates.reverse();
+        const priceProgressionRois = data.rois.reverse();
+
+        setPriceProgressionDates(priceProgressionDates);
+        setPriceProgressionRois(priceProgressionRois);
+      } else {
+        console.log("error")
+      }
+    }
+
+    if (startDate && endDate) {
+      get_price_progression();
     }
 
 
+  }, [currentPrice, previousPrice, returnOnInvestment])
 
-  };
+  useEffect(() => {
+    console.log("Price Progression Dates: ", priceProgressionDates)
+    console.log("Price Progression Rois: ", priceProgressionRois)
+  }
+    , [priceProgressionDates, priceProgressionRois])
 
   return (
     <Form {...form}>
