@@ -259,96 +259,227 @@ export function DatePickerForm() {
 
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Please choose a date of birth</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    className="border border-gray-200 rounded-lg shadow-lg p-4 bg-white"
-                    dayClassName={(date) =>
-                      "hover:bg-blue-500 hover:text-white transition-colors ease-in-out duration-200"
-                    }
-                    selectedClassName="bg-blue-500 text-white"
-                    initialFocus
+    <div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Please choose a date of birth</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-[240px] pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      className="border border-gray-200 rounded-lg shadow-lg p-4 bg-white"
+                      dayClassName={(date) =>
+                        "hover:bg-blue-500 hover:text-white transition-colors ease-in-out duration-200"
+                      }
+                      selectedClassName="bg-blue-500 text-white"
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="amount"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Please input the amount</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="Amount"
+                    className="w-full"
                   />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="amount"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Please input the amount</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="number"
-                  placeholder="Amount"
-                  className="w-full"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="stockSymbol"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Please input the stock symbol</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="string"
-                  placeholder="ex: AAPL"
-                  className="w-full"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="stockSymbol"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Please input the stock symbol</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="string"
+                    placeholder="ex: AAPL"
+                    className="w-full"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
 
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
+
+      <div>
+        {startDate && endDate && currentPrice && previousPrice && returnOnInvestment ? (
+          <div>
+            <h1>Return on Investment</h1>
+            <p>Start Date: {startDate}</p>
+            <p>End Date: {endDate}</p>
+            <p>Current Price: {currentPrice}</p>
+            <p>Previous Price: {previousPrice}</p>
+            <p>Return on Investment: {returnOnInvestment}</p>
+          </div>
+        ) : (
+          <div>
+            <p>Waiting for data...</p>
+          </div>
+        )}
+      </div>
+
+      <p>------------</p>
+
+      <div>
+        {priceProgressionDates && priceProgressionRois ? (
+          <div>
+            <h1>Price Progression</h1>
+            <p>Price Progression Dates: {priceProgressionDates}</p>
+            <p>Price Progression Rois: {priceProgressionRois}</p>
+          </div>
+        ) : (
+          <div>
+            <p>Waiting for data...</p>
+          </div>
+        )}
+      </div>
+
+      {companyInfo ? (
+        <div>
+          <h1>Company Info</h1>
+          <p><strong>Name:</strong> {companyInfo.name}</p>
+          <p><strong>Ticker:</strong> {companyInfo.ticker}</p>
+          <p><strong>Industry:</strong> {companyInfo.finnhubIndustry}</p>
+          <p><strong>Country:</strong> {companyInfo.country}</p>
+          <p><strong>Currency:</strong> {companyInfo.currency}</p>
+          <p><strong>Estimate Currency:</strong> {companyInfo.estimateCurrency}</p>
+          <p><strong>Exchange:</strong> {companyInfo.exchange}</p>
+          <p><strong>IPO Date:</strong> {companyInfo.ipo}</p>
+          <p><strong>Market Cap:</strong> ${companyInfo.marketCapitalization.toFixed(2)} Billion</p>
+          <p><strong>Shares Outstanding:</strong> {companyInfo.shareOutstanding}</p>
+          <p><strong>Phone:</strong> {companyInfo.phone}</p>
+          <p><strong>Website:</strong> <a href={companyInfo.weburl} target="_blank" rel="noopener noreferrer">{companyInfo.weburl}</a></p>
+          <p><strong>Logo:</strong></p>
+          <img src={companyInfo.logo} alt={`${companyInfo.name} logo`} style={{ width: "100px", height: "100px" }} />
+        </div>
+      ) : (
+        <div>
+          <p>Waiting for data...</p>
+        </div>
+      )}
+
+      <p>------------</p>
+
+      {companyMetrics ? (
+        <div>
+          <h1>Company Metrics</h1>
+          <ul>
+            {Object.entries(companyMetrics).map(([key, value], index) => (
+              <li key={index} style={{ marginBottom: "10px" }}>
+                <strong>{key.replace(/([A-Z])/g, ' $1').toUpperCase()}:</strong> {value}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <div>
+          <p>Waiting for metrics data...</p>
+        </div>
+      )}
+
+
+
+      <p>------------</p>
+
+      {companyNews && companyNews.length > 0 ? (
+        <div>
+          <h1>Company News</h1>
+          <ul>
+            {companyNews.map((news, index) => (
+              <li key={news.id || index} style={{ marginBottom: "20px" }}>
+                <h3>{news.headline}</h3>
+                <p><strong>Date:</strong> {new Date(news.datetime * 1000).toLocaleDateString()}</p>
+                <p><strong>Source:</strong> {news.source}</p>
+                <p><strong>Category:</strong> {news.category}</p>
+                <p><strong>Summary:</strong> {news.summary}</p>
+                <p>
+                  <strong>Related:</strong> {news.related}
+                </p>
+                <p>
+                  <strong>Read more:</strong>{" "}
+                  <a href={news.url} target="_blank" rel="noopener noreferrer">
+                    {news.url}
+                  </a>
+                </p>
+                {news.image && (
+                  <img
+                    src={news.image}
+                    alt={news.headline}
+                    style={{ width: "150px", height: "100px", marginTop: "10px" }}
+                  />
+                )}
+                <hr />
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <div>
+          <p>Waiting for news data...</p>
+        </div>
+      )}
+
+
+
+
+
+
+
+
+
+    </div >
+
   );
 }
+
