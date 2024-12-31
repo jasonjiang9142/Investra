@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import StockInfo from "./routes/stockinfo";
 import Navbar from "./components/navbar";
 import { DatePickerForm } from "./routes/datepickerform";
+import Root from "./routes/root";
 
 
 function App() {
@@ -10,6 +10,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<DatePickerForm />} />
+        <Route path="/test" element={<Root />} />
       </Routes>
     </BrowserRouter>
   );

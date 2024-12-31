@@ -271,7 +271,7 @@ export function DatePickerForm() {
             name="date"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Please choose a date of birth</FormLabel>
+                <FormLabel>Please choose a date</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
