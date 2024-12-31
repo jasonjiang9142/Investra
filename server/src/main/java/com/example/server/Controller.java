@@ -238,12 +238,11 @@ public class Controller {
 
     // api to get most recent news about the company
     @GetMapping("/api/info/news")
-    private ResponseEntity<?> getNews(String symbol) {
+    public ResponseEntity<?> getNews(
+            @RequestParam String symbol) {
         try {
             Dotenv dotenv = Dotenv.load();
             String finnhub_token = dotenv.get("finnhub_token");
-
-            symbol = "IBM";
 
             // Get the current date and 3 months ago date
             LocalDate currentDate = LocalDate.now();
@@ -283,12 +282,11 @@ public class Controller {
 
     // api to get company profile
     @GetMapping("/api/info/profile")
-    private ResponseEntity<?> getProfile(String symbol) {
+    private ResponseEntity<?> getProfile(
+            @RequestParam String symbol) {
         try {
             Dotenv dotenv = Dotenv.load();
             String finnhub_token = dotenv.get("finnhub_token");
-
-            symbol = "IBM";
 
             // Build the URL dynamically with the from and to dates
             String url = "https://finnhub.io/api/v1/stock/profile2?symbol=" + symbol + "&token=" + finnhub_token;
@@ -310,12 +308,11 @@ public class Controller {
 
     // api to get company metrics
     @GetMapping("/api/info/metrics")
-    private ResponseEntity<?> getMetrics(String symbol) {
+    private ResponseEntity<?> getMetrics(
+            @RequestParam String symbol) {
         try {
             Dotenv dotenv = Dotenv.load();
             String finnhub_token = dotenv.get("finnhub_token");
-
-            symbol = "IBM";
 
             // Build the URL dynamically with the from and to dates
             String url = "https://finnhub.io/api/v1/stock/metric?symbol=" + symbol + "&metric=all&token="

@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/popover";
 
 import { backendurl } from "@/utilities";
+import { use } from "react";
 
 // Schema for validation using Zod
 const FormSchema = z.object({
@@ -42,7 +43,7 @@ const FormSchema = z.object({
 });
 
 export function DatePickerForm() {
-  // date for the return on investment
+  // data for the return on investment
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(null);
@@ -51,9 +52,14 @@ export function DatePickerForm() {
   const [amount, setAmount] = useState(null);
   const [stockSymbol, setStockSymbol] = useState(null);
 
-  // date for the price progression 
+  // data for the price progression 
   const [priceProgressionDates, setPriceProgressionDates] = useState(null);
   const [priceProgressionRois, setPriceProgressionRois] = useState(null);
+
+  // data to get company info 
+  const [companyInfo, setCompanyInfo] = useState(null);
+  const [companyNews, setCompanyNews] = useState(null);
+  const [companyMetrics, setCompanyMetrics] = useState(null);
 
 
 
@@ -113,6 +119,7 @@ export function DatePickerForm() {
 
   };
 
+  // get the price progression once the current price, previous price and return on investment are set 
   useEffect(() => {
     console.log("Current Price: ", currentPrice)
     console.log("Previous Price: ", previousPrice)
@@ -154,14 +161,102 @@ export function DatePickerForm() {
       get_price_progression();
     }
 
+  }, [startDate, endDate, amount, stockSymbol])
 
-  }, [currentPrice, previousPrice, returnOnInvestment])
+  // get the news once the stock symbol is set
+  useEffect(() => {
+    const get_company_news = async () => {
+      const queryParams = {
+        symbol: stockSymbol
+      }
+
+      const queryString = new URLSearchParams(queryParams).toString();
+
+      const news_response = await fetch(`${backendurl}/api/info/news?${queryString}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+
+      if (news_response.ok) {
+        const data = await news_response.json();
+        setCompanyNews(data);
+      } else {
+        console.log("error")
+      }
+    }
+
+    const get_company_info = async () => {
+      const queryParams = {
+        symbol: stockSymbol
+      }
+
+      const queryString = new URLSearchParams(queryParams).toString();
+
+      const news_response = await fetch(`${backendurl}/api/info/profile?${queryString}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+
+      if (news_response.ok) {
+        const data = await news_response.json();
+        setCompanyInfo(data);
+      } else {
+        console.log("error")
+      }
+    }
+
+    const get_company_metrics = async () => {
+      const queryParams = {
+        symbol: stockSymbol
+      }
+
+      const queryString = new URLSearchParams(queryParams).toString();
+
+      const news_response = await fetch(`${backendurl}/api/info/metrics?${queryString}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+
+      if (news_response.ok) {
+        const data = await news_response.json();
+        setCompanyMetrics(data.metric);
+      } else {
+        console.log("error")
+      }
+
+    }
+
+    if (stockSymbol) {
+      get_company_news();
+      get_company_info();
+      get_company_metrics();
+    }
+
+  }, [stockSymbol])
+
+
 
   useEffect(() => {
     console.log("Price Progression Dates: ", priceProgressionDates)
     console.log("Price Progression Rois: ", priceProgressionRois)
-  }
-    , [priceProgressionDates, priceProgressionRois])
+  }, [priceProgressionDates, priceProgressionRois])
+
+  useEffect(() => {
+    console.log("Company Info: ", companyInfo)
+    console.log("Company News: ", companyNews)
+    console.log("Company Metrics: ", companyMetrics)
+  }, [companyInfo, companyNews, companyMetrics])
+
+
 
   return (
     <Form {...form}>
