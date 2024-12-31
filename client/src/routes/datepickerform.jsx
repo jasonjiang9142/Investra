@@ -10,7 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import StockChart from "./stockchart";
+import StockChart from "../components/stockChart";
+import ReturnOnInvestment from "../components/returnonInvestment";
+import CompanyInfo from "../components/companyInfo";
+import CompanyNews from "../components/companyNews";
 
 import {
   Form,
@@ -29,6 +32,7 @@ import {
 
 import { backendurl } from "@/utilities";
 import { use } from "react";
+import CompanyMetrics from "../components/companymetrics";
 
 // Schema for validation using Zod
 const FormSchema = z.object({
@@ -78,7 +82,6 @@ export function DatePickerForm() {
     setAmount(amount);
     setStockSymbol(stockSymbol);
 
-
     try {
       const get_price_now = async () => {
         const queryParams = {
@@ -104,7 +107,6 @@ export function DatePickerForm() {
           setCurrentPrice(data.currentPrice);
           setPreviousPrice(data.previousPrice);
           setReturnOnInvestment(data.returnOnInvestment);
-
 
         } else {
           const errorData = await price_now_response.text();
@@ -261,7 +263,7 @@ export function DatePickerForm() {
 
 
   return (
-    <div>
+    <div className="m-8">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -357,131 +359,71 @@ export function DatePickerForm() {
       <div>
         {startDate && endDate && currentPrice && previousPrice && returnOnInvestment ? (
           <div>
-            <h1>Return on Investment</h1>
-            <p>Start Date: {startDate}</p>
-            <p>End Date: {endDate}</p>
-            <p>Current Price: {currentPrice}</p>
-            <p>Previous Price: {previousPrice}</p>
-            <p>Return on Investment: {returnOnInvestment}</p>
+            <ReturnOnInvestment startDate={startDate} endDate={endDate} currentPrice={currentPrice} previousPrice={previousPrice} returnOnInvestment={returnOnInvestment} />
           </div>
         ) : (
           <div>
             <p>Waiting for data...</p>
           </div>
         )}
+
       </div>
 
       <p>------------</p>
 
 
       <div>
-        {priceProgressionDates && priceProgressionRois ? (
+        {priceProgressionDates && priceProgressionRois && priceProgressionDates.length > 0 && priceProgressionRois.length > 0 ? (
           <div>
-            {/* <div>
-              <h1>Price Progression</h1>
-              <p>Price Progression Dates: {priceProgressionDates}</p>
-              <p>Price Progression Rois: {priceProgressionRois}</p>
-            </div> */}
-
             <StockChart priceProgressionDates={priceProgressionDates} priceProgressionRois={priceProgressionRois} />
+          </div>
+        ) : (
+          <div>
+            <p>Waiting for data for the stockchart </p>
+          </div>
+        )}
+      </div>
+
+      {
+        companyInfo ? (
+          <div>
+            <CompanyInfo companyInfo={companyInfo} />
           </div>
         ) : (
           <div>
             <p>Waiting for data...</p>
           </div>
-        )}
-      </div>
-
-      {companyInfo ? (
-        <div>
-          <h1>Company Info</h1>
-          <p><strong>Name:</strong> {companyInfo.name}</p>
-          <p><strong>Ticker:</strong> {companyInfo.ticker}</p>
-          <p><strong>Industry:</strong> {companyInfo.finnhubIndustry}</p>
-          <p><strong>Country:</strong> {companyInfo.country}</p>
-          <p><strong>Currency:</strong> {companyInfo.currency}</p>
-          <p><strong>Estimate Currency:</strong> {companyInfo.estimateCurrency}</p>
-          <p><strong>Exchange:</strong> {companyInfo.exchange}</p>
-          <p><strong>IPO Date:</strong> {companyInfo.ipo}</p>
-          <p><strong>Market Cap:</strong> ${companyInfo.marketCapitalization.toFixed(2)} Billion</p>
-          <p><strong>Shares Outstanding:</strong> {companyInfo.shareOutstanding}</p>
-          <p><strong>Phone:</strong> {companyInfo.phone}</p>
-          <p><strong>Website:</strong> <a href={companyInfo.weburl} target="_blank" rel="noopener noreferrer">{companyInfo.weburl}</a></p>
-          <p><strong>Logo:</strong></p>
-          <img src={companyInfo.logo} alt={`${companyInfo.name} logo`} style={{ width: "100px", height: "100px" }} />
-        </div>
-      ) : (
-        <div>
-          <p>Waiting for data...</p>
-        </div>
-      )}
+        )
+      }
 
       <p>------------</p>
 
-      {companyMetrics ? (
-        <div>
-          <h1>Company Metrics</h1>
-          <ul>
-            {Object.entries(companyMetrics).map(([key, value], index) => (
-              <li key={index} style={{ marginBottom: "10px" }}>
-                <strong>{key.replace(/([A-Z])/g, ' $1').toUpperCase()}:</strong> {value}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <div>
-          <p>Waiting for metrics data...</p>
-        </div>
-      )}
-
-
+      {
+        companyMetrics ? (
+          <div>
+            <CompanyMetrics companyMetrics={companyMetrics} />
+          </div>
+        ) : (
+          <div>
+            <p>Waiting for metrics data...</p>
+          </div>
+        )
+      }
 
       <p>------------</p>
 
-      {companyNews && companyNews.length > 0 ? (
-        <div>
-          <h1>Company News</h1>
-          <ul>
-            {companyNews.map((news, index) => (
-              <li key={news.id || index} style={{ marginBottom: "20px" }}>
-                <h3>{news.headline}</h3>
-                <p><strong>Date:</strong> {new Date(news.datetime * 1000).toLocaleDateString()}</p>
-                <p><strong>Source:</strong> {news.source}</p>
-                <p><strong>Category:</strong> {news.category}</p>
-                <p><strong>Summary:</strong> {news.summary}</p>
-                <p>
-                  <strong>Related:</strong> {news.related}
-                </p>
-                <p>
-                  <strong>Read more:</strong>{" "}
-                  <a href={news.url} target="_blank" rel="noopener noreferrer">
-                    {news.url}
-                  </a>
-                </p>
-                {news.image && (
-                  <img
-                    src={news.image}
-                    alt={news.headline}
-                    style={{ width: "150px", height: "100px", marginTop: "10px" }}
-                  />
-                )}
-                <hr />
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <div>
-          <p>Waiting for news data...</p>
-        </div>
-      )}
 
-
-
-
-
-
+      {
+        companyNews && companyNews.length > 0 ? (
+          <div>
+            <CompanyNews companyNews={companyNews} />
+          </div>
+        ) : (
+          <div>
+            <p>Waiting for news data...</p>
+          </div>
+        )
+      }
 
 
 

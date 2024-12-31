@@ -55,7 +55,7 @@ const StockChart = ({ priceProgressionDates, priceProgressionRois }) => {
           <div>
             <h2>Chart of Price Progression</h2>
             <Line data={chartData} />
-          </div>
+          </div>7866tyr
         </div>
       ) : (
         <div>
