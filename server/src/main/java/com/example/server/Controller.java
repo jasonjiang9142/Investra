@@ -123,10 +123,6 @@ public class Controller {
     ) {
         try {
 
-            // String symbol = "IBM";
-            // String input_date = "1990-03-06";
-            // double amountInvested = 1000.0;
-
             System.out.println(symbol);
 
             String[] datedArray = getDatedPrice(symbol, date);
@@ -179,10 +175,6 @@ public class Controller {
             @RequestParam double amountInvested,
             @RequestParam String symbol) {
         try {
-            // String startDate = "1999-11-01";
-            // String endDate = "2024-12-27";
-            // double amountInvested = 1000.0;
-            // String symbol = "IBM";
 
             List<String> dates = new ArrayList<>();
             List<Double> rois = new ArrayList<>();
