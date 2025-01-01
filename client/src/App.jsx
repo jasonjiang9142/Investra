@@ -6,13 +6,15 @@ import Root from "./routes/root";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<DatePickerForm />} />
-        <Route path="/test" element={<Root />} />
-      </Routes>
-    </BrowserRouter>
+    <div className=''>
+      <BrowserRouter>
+        {/* <Navbar /> */}
+        <Routes>
+          <Route path="/" element={<DatePickerForm />} />
+          <Route path="/test" element={<Root />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 

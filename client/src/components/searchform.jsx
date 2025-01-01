@@ -5,11 +5,13 @@ import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
+
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import {
     Form,
@@ -20,18 +22,13 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 
-import { backendurl } from "@/utilities";
+
 
 // Schema for validation using Zod
 const FormSchema = z.object({
     date: z.date({
-        required_error: "A date of birth is required.",
+        required_error: "A date is required.",
     }),
     amount: z
         .string() // Accepting the value as string initially
@@ -71,68 +68,44 @@ const SearchForm = ({ passDataToParent }) => {
 
 
     return (
-        <div>
+        <div className='mx-6 my-8'>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+                    {/* Date Picker Field */}
                     <FormField
                         control={form.control}
                         name="date"
                         render={({ field }) => (
                             <FormItem className="flex flex-col">
-                                <FormLabel>Please choose a date</FormLabel>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <FormControl>
-                                            <Button
-                                                variant={"outline"}
-                                                className={cn(
-                                                    "w-[240px] pl-3 text-left font-normal",
-                                                    !field.value && "text-muted-foreground"
-                                                )}
-                                            >
-                                                {field.value ? (
-                                                    format(field.value, "PPP")
-                                                ) : (
-                                                    <span>Pick a date</span>
-                                                )}
-                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                            </Button>
-                                        </FormControl>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
-                                        <Calendar
-                                            mode="single"
-                                            selected={field.value}
-                                            onSelect={field.onChange}
-                                            disabled={(date) =>
-                                                date > new Date() || date < new Date("1900-01-01")
-                                            }
-                                            className="border border-gray-200 rounded-lg shadow-lg p-4 bg-white"
-                                            dayClassName={(date) =>
-                                                "hover:bg-blue-500 hover:text-white transition-colors ease-in-out duration-200"
-                                            }
-                                            selectedClassName="bg-blue-500 text-white"
-                                            initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
+                                <FormLabel className="text-gray-700 font-medium">Please choose a date</FormLabel>
+                                <FormControl>
+                                    <DatePicker
+                                        selected={field.value}
+                                        onChange={field.onChange}
+                                        dateFormat="MMMM d, yyyy"
+                                        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
+                                        placeholderText="Pick a date"
+                                        maxDate={new Date()} // Prevent future dates
+                                    />
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
 
+                    {/* Amount Input Field */}
                     <FormField
                         control={form.control}
                         name="amount"
                         render={({ field }) => (
                             <FormItem className="flex flex-col">
-                                <FormLabel>Please input the amount</FormLabel>
+                                <FormLabel className="text-gray-700 font-medium">Please input the amount</FormLabel>
                                 <FormControl>
                                     <Input
                                         {...field}
                                         type="number"
                                         placeholder="Amount"
-                                        className="w-full"
+                                        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -140,18 +113,19 @@ const SearchForm = ({ passDataToParent }) => {
                         )}
                     />
 
+                    {/* Stock Symbol Input Field */}
                     <FormField
                         control={form.control}
                         name="stockSymbol"
                         render={({ field }) => (
                             <FormItem className="flex flex-col">
-                                <FormLabel>Please input the stock symbol</FormLabel>
+                                <FormLabel className="text-gray-700 font-medium">Please input the stock symbol</FormLabel>
                                 <FormControl>
                                     <Input
                                         {...field}
                                         type="string"
                                         placeholder="ex: AAPL"
-                                        className="w-full"
+                                        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -159,11 +133,14 @@ const SearchForm = ({ passDataToParent }) => {
                         )}
                     />
 
-
-                    <Button type="submit">Submit</Button>
+                    {/* Submit Button */}
+                    <Button type="submit" className='w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition ease-in-out duration-300'>
+                        Submit
+                    </Button>
                 </form>
             </Form>
         </div>
+
     )
 }
 

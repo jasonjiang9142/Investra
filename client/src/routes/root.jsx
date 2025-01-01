@@ -236,83 +236,102 @@ const Root = () => {
             <Navbar passDataToGrandparent={passDataToGrandparent} />
 
             <div>
-                {startDate && endDate && currentPrice && previousPrice && returnOnInvestment ? (
-                    <div>
-                        <ReturnOnInvestment
-                            startDate={startDate}
-                            endDate={endDate}
-                            currentPrice={currentPrice}
-                            previousPrice={previousPrice}
-                            returnOnInvestment={returnOnInvestment}
-                        />
-                    </div>
-                ) : (
-                    <div>
-                        <p>Waiting for data...</p>
-                    </div>
-                )}
-            </div>
+                <div>
+                    {startDate && endDate && currentPrice && previousPrice && returnOnInvestment ? (
+                        <div>
+                            <ReturnOnInvestment
+                                startDate={startDate}
+                                endDate={endDate}
+                                currentPrice={currentPrice}
+                                previousPrice={previousPrice}
+                                returnOnInvestment={returnOnInvestment}
+                            />
+                        </div>
+                    ) : (
+                        <div>
+                            <p>Waiting for data...</p>
+                        </div>
+                    )}
+                </div>
 
-            <p>------------</p>
+                <p>------------</p>
 
+                <div>
+                    {priceProgressionDates && priceProgressionRois && priceProgressionDates.length > 0 && priceProgressionRois.length > 0 ? (
+                        <div>
+                            <StockChart
+                                priceProgressionDates={priceProgressionDates}
+                                priceProgressionRois={priceProgressionRois}
+                            />
+                        </div>
+                    ) : (
+                        <div>
+                            <p>Waiting for data for the stock chart</p>
+                        </div>
+                    )}
+                </div>
+
+                <p>------------</p>
+
+                <div>
+                    {companyInfo ? (
+                        <div>
+                            <CompanyInfo companyInfo={companyInfo} />
+                        </div>
+                    ) : (
+                        <div>
+                            <p>Waiting for data...</p>
+                        </div>
+                    )}
+                </div>
+
+                <p>------------</p>
+
+                <div>
+                    {companyMetrics ? (
+                        <div>
+                            <CompanyMetrics companyMetrics={companyMetrics} />
+                        </div>
+                    ) : (
+                        <div>
+                            <p>Waiting for metrics data...</p>
+                        </div>
+                    )}
+                </div>
+
+                <p>------------</p>
+
+                <div>
+                    {companyNews && companyNews.length > 0 ? (
+                        <div>
+                            <CompanyNews companyNews={companyNews} />
+                        </div>
+                    ) : (
+                        <div>
+                            <LoadingState message="Waiting for data..." />
+
+                        </div>
+                    )}
+                </div>
+
+            </div>) : (
             <div>
-                {priceProgressionDates && priceProgressionRois && priceProgressionDates.length > 0 && priceProgressionRois.length > 0 ? (
-                    <div>
-                        <StockChart
-                            priceProgressionDates={priceProgressionDates}
-                            priceProgressionRois={priceProgressionRois}
-                        />
-                    </div>
-                ) : (
-                    <div>
-                        <p>Waiting for data for the stock chart</p>
-                    </div>
-                )}
+                <LoadingState message="Waiting for data..." />
             </div>
+            )
+            }
 
-            <p>------------</p>
 
-            <div>
-                {companyInfo ? (
-                    <div>
-                        <CompanyInfo companyInfo={companyInfo} />
-                    </div>
-                ) : (
-                    <div>
-                        <p>Waiting for data...</p>
-                    </div>
-                )}
-            </div>
-
-            <p>------------</p>
-
-            <div>
-                {companyMetrics ? (
-                    <div>
-                        <CompanyMetrics companyMetrics={companyMetrics} />
-                    </div>
-                ) : (
-                    <div>
-                        <p>Waiting for metrics data...</p>
-                    </div>
-                )}
-            </div>
-
-            <p>------------</p>
-
-            <div>
-                {companyNews && companyNews.length > 0 ? (
-                    <div>
-                        <CompanyNews companyNews={companyNews} />
-                    </div>
-                ) : (
-                    <div>
-                        <p>Waiting for news data...</p>
-                    </div>
-                )}
-            </div>
         </div>
     )
 }
+
+const LoadingState = ({ message = "Waiting for data..." }) => (
+    <div className="flex justify-center items-center h-full">
+        <div className="text-lg font-medium text-gray-600">{message}</div>
+        {/* Optionally add a spinner */}
+        <div className="ml-3 animate-spin rounded-full border-4 border-t-4 border-blue-500 w-6 h-6"></div>
+    </div>
+);
 
 export default Root;
