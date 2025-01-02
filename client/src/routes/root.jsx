@@ -2,7 +2,6 @@ import React from "react";
 
 import { useEffect, useState } from "react";
 import StockChart from "../components/stockChart";
-import ReturnOnInvestment from "../components/returnonInvestment";
 import CompanyInfo from "../components/companyInfo";
 import CompanyNews from "../components/companyNews";
 import { backendurl } from "@/utilities";
@@ -47,14 +46,18 @@ const Root = () => {
         console.log("Input Date: ", inputDate)
 
 
+
+
         const get_return_on_investment = async () => {
             try {
                 const get_price_now = async () => {
                     const queryParams = {
                         symbol: stockSymbol,
-                        date: date,
+                        date: inputDate,
                         amount: amount,
                     }
+
+                    console.log("Query Params: ", queryParams)
 
                     const queryString = new URLSearchParams(queryParams).toString();
 
@@ -67,6 +70,7 @@ const Root = () => {
 
                     if (price_now_response.ok) {
                         const data = await price_now_response.json();
+                        console.log("return on investment")
                         console.log(data);
                         setStartDate(data.previousDate);
                         setEndDate(data.currentDate);
@@ -86,10 +90,13 @@ const Root = () => {
                 console.log(e)
             }
         }
-
+        console.log("Getting the Return on Investment component")
         if (amount && stockSymbol && inputDate) {
+            console.log('Inside the conditional function')
             get_return_on_investment();
         }
+
+        console.log("Return on investment done")
     }, [amount, stockSymbol, inputDate])
 
 
@@ -220,14 +227,14 @@ const Root = () => {
 
 
     useEffect(() => {
-        console.log("Price Progression Dates: ", priceProgressionDates)
-        console.log("Price Progression Rois: ", priceProgressionRois)
+        // console.log("Price Progression Dates: ", priceProgressionDates)
+        // console.log("Price Progression Rois: ", priceProgressionRois)
     }, [priceProgressionDates, priceProgressionRois])
 
     useEffect(() => {
-        console.log("Company Info: ", companyInfo)
-        console.log("Company News: ", companyNews)
-        console.log("Company Metrics: ", companyMetrics)
+        // console.log("Company Info: ", companyInfo)
+        // console.log("Company News: ", companyNews)
+        // console.log("Company Metrics: ", companyMetrics)
     }, [companyInfo, companyNews, companyMetrics])
 
     return (
@@ -235,17 +242,17 @@ const Root = () => {
             {/* Passing the handler function to Navbar */}
             <Navbar passDataToGrandparent={passDataToGrandparent} />
 
-            <div>
+            <div className='mx-32 my-8 '>
+
                 <div>
-                    {startDate && endDate && currentPrice && previousPrice && returnOnInvestment ? (
+                    {companyInfo ? (
                         <div>
-                            <ReturnOnInvestment
-                                startDate={startDate}
+                            <CompanyInfo companyInfo={companyInfo} startDate={startDate}
                                 endDate={endDate}
                                 currentPrice={currentPrice}
                                 previousPrice={previousPrice}
                                 returnOnInvestment={returnOnInvestment}
-                            />
+                                amount={amount} />
                         </div>
                     ) : (
                         <div>
@@ -253,8 +260,6 @@ const Root = () => {
                         </div>
                     )}
                 </div>
-
-                <p>------------</p>
 
                 <div>
                     {priceProgressionDates && priceProgressionRois && priceProgressionDates.length > 0 && priceProgressionRois.length > 0 ? (
@@ -271,22 +276,6 @@ const Root = () => {
                     )}
                 </div>
 
-                <p>------------</p>
-
-                <div>
-                    {companyInfo ? (
-                        <div>
-                            <CompanyInfo companyInfo={companyInfo} />
-                        </div>
-                    ) : (
-                        <div>
-                            <p>Waiting for data...</p>
-                        </div>
-                    )}
-                </div>
-
-                <p>------------</p>
-
                 <div>
                     {companyMetrics ? (
                         <div>
@@ -299,12 +288,10 @@ const Root = () => {
                     )}
                 </div>
 
-                <p>------------</p>
-
                 <div>
-                    {companyNews && companyNews.length > 0 ? (
+                    {companyInfo && companyNews && companyNews.length > 0 ? (
                         <div>
-                            <CompanyNews companyNews={companyNews} />
+                            <CompanyNews companyNews={companyNews} companyInfo={companyInfo} />
                         </div>
                     ) : (
                         <div>
@@ -314,12 +301,9 @@ const Root = () => {
                     )}
                 </div>
 
-            </div>) : (
-            <div>
-                <LoadingState message="Waiting for data..." />
             </div>
-            )
-            }
+
+
 
 
         </div>

@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Navbar from "./components/navbar";
-import { DatePickerForm } from "./routes/datepickerform";
 import Root from "./routes/root";
 
 
@@ -10,8 +9,7 @@ function App() {
       <BrowserRouter>
         {/* <Navbar /> */}
         <Routes>
-          <Route path="/" element={<DatePickerForm />} />
-          <Route path="/test" element={<Root />} />
+          <Route path="/" element={<Root />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -1,54 +1,96 @@
 import { useEffect, useState } from "react";
 
-const CompanyNews = ({ companyNews }) => {
+const CompanyNews = ({ companyNews, companyInfo }) => {
+    const [visibleNews, setVisibleNews] = useState(10); // Initially show 10 news articles
 
     useEffect(() => {
-        console.log("---")
-        console.log("company news", companyNews)
+        console.log("---");
+        console.log("company news", companyNews);
+        console.log("company info", companyInfo);
     }, []);
 
+    // Function to load more news
+    const loadMoreNews = () => {
+        setVisibleNews((prev) => prev + 10); // Load 10 more news articles
+    };
+
     return (
-        <div>
-            {
-                companyNews && companyNews.length > 0 ? (
-                    <div>
-                        <h1>Company News</h1>
-                        <ul>
-                            {companyNews.map((news, index) => (
-                                <li key={news.id || index} style={{ marginBottom: "20px" }}>
-                                    <h3>{news.headline}</h3>
-                                    <p><strong>Date:</strong> {new Date(news.datetime * 1000).toLocaleDateString()}</p>
-                                    <p><strong>Source:</strong> {news.source}</p>
-                                    <p><strong>Category:</strong> {news.category}</p>
-                                    <p><strong>Summary:</strong> {news.summary}</p>
-                                    <p>
-                                        <strong>Related:</strong> {news.related}
-                                    </p>
-                                    <p>
-                                        <strong>Read more:</strong>{" "}
-                                        <a href={news.url} target="_blank" rel="noopener noreferrer">
-                                            {news.url}
-                                        </a>
-                                    </p>
-                                    {news.image && (
+        <div className="p-6 ">
+            <h1 className="text-2xl font-bold mb-4 text-gray-800">Recent News: </h1>
+
+            {companyNews && companyNews.length > 0 ? (
+                <div className="grid grid-cols-2 gap-8 ">
+                    {companyNews.slice(0, visibleNews).map((news, index) => (
+                        <a
+                            href={news.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block mt-4 text-sm"
+                        >
+                            <div
+                                key={news.id || index}
+                                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow grid grid-cols-3 gap-4 h-[175px]"
+                            >
+
+                                <div className='col-span-2'>
+                                    <h3 className="text-lg font-semibold mb-2 text-gray-900 line-clamp-3">{news.headline}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-sm text-gray-600">
+                                            {news.source}
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            •
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            {new Date(news.datetime * 1000).toLocaleDateString()}
+                                        </p>
+
+                                    </div>
+
+                                    <p className="text-xs text-gray-700 mt-2 line-clamp-3">{news.summary}</p>
+
+                                </div>
+
+                                <div>
+                                    {news.image ? (
                                         <img
                                             src={news.image}
                                             alt={news.headline}
-                                            style={{ width: "150px", height: "100px", marginTop: "10px" }}
+                                            className="w-full h-32 object-cover rounded-md mt-4"
                                         />
+                                    ) : (
+                                        <img
+                                            src={companyInfo.logo}
+                                            alt="Placeholder"
+                                            className="w-full h-32 object-cover rounded-md mt-4"
+                                        />
+
                                     )}
-                                    <hr />
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ) : (
-                    <div>
-                        <p>Waiting for news data... company news </p>
-                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </a>
+                    ))}
+                </div>
+            ) : (
+                <p className="text-gray-500">Waiting for news data...</p>
+            )
+            }
+
+            {
+                visibleNews < companyNews.length && (
+                    <button
+                        onClick={loadMoreNews}
+                        className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                        More News
+                    </button>
                 )
             }
-        </div>
+        </div >
     );
-}
+};
+
 export default CompanyNews;

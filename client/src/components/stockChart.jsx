@@ -21,45 +21,84 @@ ChartJS.register(
   Legend
 );
 
-
 const StockChart = ({ priceProgressionDates, priceProgressionRois }) => {
-
-  useEffect(() => {
-    console.log("---")
-    console.log("price progression dates", priceProgressionDates)
-    console.log("price progression rois", priceProgressionRois)
-  }, []);
-
 
   // Process data for Chart.js
   const chartData = {
     labels: priceProgressionDates,  // Use priceProgressionDates for X-axis
     datasets: [
       {
-        label: 'Price Progression',
+        label: 'ROI',  // Label for the line
         data: priceProgressionRois,  // Use priceProgressionRois for Y-axis
-        borderColor: 'rgba(75,192,192,1)',
-        backgroundColor: 'rgba(75,192,192,0.2)',
-        fill: true,
+        borderColor: '#037b66',  // Line color
+        backgroundColor: '#037b66',  // Fill color under the curve
+        fill: false,  // Fill the area under the curve
+        pointRadius: 0,  // Radius of points on the line
+        pointHoverRadius: 1,  // Hover effect for points
+        tension: 0,  // Smoothing of the line
       },
     ],
   };
 
+  // Chart options for better design
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: false,
+        text: 'Stock Price Progression',
+        font: {
+          size: 18,
+        },
+      },
+      tooltip: {
+        enabled: true,
+        mode: 'index',
+        intersect: false,
+      },
+      legend: {
+        position: 'bottom',
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Date',
+        },
+        grid: {
+          display: true,
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          maxTicksLimit: 20,  // Limit the number of ticks to 10 to prevent crowding
+          autoSkip: true,  // Auto-skip labels to avoid overlapping
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Return on Investment',
+        },
+        grid: {
+          display: true,
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+      },
+    },
+  };
+
   return (
-    <div>
+    <div className="px-4 py-2">
       {priceProgressionDates.length > 0 && priceProgressionRois.length > 0 ? (
         <div>
-          <h1>Price Progression</h1>
-
-          {/* Display as Chart */}
-          <div>
-            <h2>Chart of Price Progression</h2>
-            <Line data={chartData} />
-          </div>7866tyr
+          <div className="relative w-10/12 mx-auto">
+            <Line data={chartData} options={chartOptions} />
+          </div>
         </div>
       ) : (
-        <div>
-          <p>Waiting for data for the stockchart </p>
+        <div className="text-center">
+          <p className="text-lg text-gray-500">Waiting for data for the stock chart...</p>
         </div>
       )}
     </div>

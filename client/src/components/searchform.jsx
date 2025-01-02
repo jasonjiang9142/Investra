@@ -93,6 +93,26 @@ const SearchForm = ({ passDataToParent }) => {
                         )}
                     />
 
+                    {/* Stock Symbol Input Field */}
+                    <FormField
+                        control={form.control}
+                        name="stockSymbol"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                                <FormLabel className="text-gray-700 font-medium">Please input the stock symbol</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        type="string"
+                                        placeholder="ex: AAPL"
+                                        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
                     {/* Amount Input Field */}
                     <FormField
                         control={form.control}
@@ -113,25 +133,7 @@ const SearchForm = ({ passDataToParent }) => {
                         )}
                     />
 
-                    {/* Stock Symbol Input Field */}
-                    <FormField
-                        control={form.control}
-                        name="stockSymbol"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-col">
-                                <FormLabel className="text-gray-700 font-medium">Please input the stock symbol</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        type="string"
-                                        placeholder="ex: AAPL"
-                                        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+
 
                     {/* Submit Button */}
                     <Button type="submit" className='w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition ease-in-out duration-300'>
