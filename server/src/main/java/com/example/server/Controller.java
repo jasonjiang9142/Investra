@@ -24,21 +24,28 @@ import java.time.format.DateTimeParseException;
 @CrossOrigin(origins = "*")
 public class Controller {
 
-    @Cacheable(value = "dailyApi", key = "#symbol", unless = "#result == null or !#result.containsKey('Meta Data')")
+    @Cacheable(value = "dailyApi", key = "#symbol", unless = "#result == null or (#result['Meta Data'] == null)")
     public Map<String, Object> fetchDailyApi(String symbol) {
         try {
+            System.out.println("Attempting to fetch Daily API");
             Dotenv dotenv = Dotenv.load();
             String alpha_advantage_key = dotenv.get("alpha_advantage_key");
+            if (alpha_advantage_key == null) {
+                throw new IllegalStateException("API key is missing in environment variables.");
+            }
+
+            System.out.println("API key found");
 
             // String url =
             // "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" +
             // symbol + "&outputsize=full&apikey=" + alpha_advantage_key;
-            System.out.println(symbol);
+
             String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo";
 
             RestTemplate restTemplate = new RestTemplate();
             Map<String, Object> result = restTemplate.getForObject(url, Map.class);
-            System.out.println("after");
+
+            System.out.println("API fetched");
 
             return result;
         } catch (Exception e) {
@@ -58,7 +65,6 @@ public class Controller {
             // get the price of the current day
             Map<String, Object> timeSeries = (Map<String, Object>) response.get("Time Series (Daily)");
             String date = (String) timeSeries.keySet().toArray()[0];
-            System.out.println("current Day " + date);
 
             Map<String, Object> currentDayData = (Map<String, Object>) timeSeries.get(date);
             String price = (String) currentDayData.get("4. close");
@@ -123,8 +129,6 @@ public class Controller {
     ) {
         try {
 
-            System.out.println(symbol);
-
             String[] datedArray = getDatedPrice(symbol, date);
             String[] currentArray = getCurrentPrice(symbol);
 
@@ -134,9 +138,6 @@ public class Controller {
 
             String previousDate = datedArray[1];
             String currentDate = currentArray[1];
-
-            System.out.println("Previous price: " + previousPriceValue + " on " + previousDate);
-            System.out.println("Current price: " + currentPriceValue + " on " + currentDate);
 
             // Calculate the return on investment based on the prices
             double returnOnInvestment = (currentPriceValue - previousPriceValue)
@@ -206,8 +207,6 @@ public class Controller {
                 }
             }
             // Create a response map containing dates and calculated ROIs
-            System.out.println("dates: " + dates);
-            System.out.println("rois: " + rois);
 
             Map<String, Object> result = new HashMap<>();
             result.put("dates", dates);
@@ -227,14 +226,41 @@ public class Controller {
     }
 
     // ----------------- API to get company information-----------------
+    @Cacheable(value = "newsApi", key = "#symbol", unless = "#result == null")
+    public List<Map<String, Object>> fetchNewsAPI(String symbol, String toDate, String fromDate) {
+        try {
+
+            Dotenv dotenv = Dotenv.load();
+            String finnhub_token = dotenv.get("finnhub_token");
+
+            // Build the URL dynamically with the from and to dates
+            String url = "https://finnhub.io/api/v1/company-news?symbol=" + symbol
+                    + "&from=" + fromDate + "&to=" + toDate + "&token=" + finnhub_token;
+
+            // Create RestTemplate instance to make the API request
+            RestTemplate restTemplate = new RestTemplate();
+            List<Map<String, Object>> newsData = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Map<String, Object>>>() {
+                    }).getBody();
+
+            return newsData;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     // api to get most recent news about the company
     @GetMapping("/api/info/news")
     public ResponseEntity<?> getNews(
             @RequestParam String symbol) {
         try {
-            Dotenv dotenv = Dotenv.load();
-            String finnhub_token = dotenv.get("finnhub_token");
+            // Dotenv dotenv = Dotenv.load();
+            // String finnhub_token = dotenv.get("finnhub_token");
 
             // Get the current date and 3 months ago date
             LocalDate currentDate = LocalDate.now();
@@ -245,25 +271,27 @@ public class Controller {
             String fromDate = oneWeekAgo.format(formatter);
             String toDate = currentDate.format(formatter);
 
-            System.out.println(finnhub_token);
+            // System.out.println(finnhub_token);
 
-            // Build the URL dynamically with the from and to dates
-            String url = "https://finnhub.io/api/v1/company-news?symbol=" + symbol
-                    + "&from=" + fromDate + "&to=" + toDate + "&token=" + finnhub_token;
+            // // Build the URL dynamically with the from and to dates
+            // String url = "https://finnhub.io/api/v1/company-news?symbol=" + symbol
+            // + "&from=" + fromDate + "&to=" + toDate + "&token=" + finnhub_token;
 
-            System.out.println(url);
+            // System.out.println(url);
 
-            // Create RestTemplate instance to make the API request
+            // // Create RestTemplate instance to make the API request
 
-            RestTemplate restTemplate = new RestTemplate();
-            List<Map<String, Object>> newsData = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<Map<String, Object>>>() {
-                    }).getBody();
+            // RestTemplate restTemplate = new RestTemplate();
+            // List<Map<String, Object>> newsData = restTemplate.exchange(
+            // url,
+            // HttpMethod.GET,
+            // null,
+            // new ParameterizedTypeReference<List<Map<String, Object>>>() {
+            // }).getBody();
 
-            return ResponseEntity.ok(newsData);
+            List<Map<String, Object>> newsData2 = fetchNewsAPI(symbol, toDate, fromDate);
+
+            return ResponseEntity.ok(newsData2);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -282,8 +310,6 @@ public class Controller {
 
             // Build the URL dynamically with the from and to dates
             String url = "https://finnhub.io/api/v1/stock/profile2?symbol=" + symbol + "&token=" + finnhub_token;
-
-            System.out.println(url);
 
             // Create RestTemplate instance to make the API request
             RestTemplate restTemplate = new RestTemplate();
@@ -309,8 +335,6 @@ public class Controller {
             // Build the URL dynamically with the from and to dates
             String url = "https://finnhub.io/api/v1/stock/metric?symbol=" + symbol + "&metric=all&token="
                     + finnhub_token;
-
-            System.out.println(url);
 
             // Create RestTemplate instance to make the API request
             RestTemplate restTemplate = new RestTemplate();

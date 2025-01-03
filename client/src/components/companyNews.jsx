@@ -29,7 +29,7 @@ const CompanyNews = ({ companyNews, companyInfo }) => {
                         >
                             <div
                                 key={news.id || index}
-                                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow grid grid-cols-3 gap-4 h-[175px]"
+                                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow grid grid-cols-3 gap-4 h-[200px]"
                             >
 
                                 <div className='col-span-2'>

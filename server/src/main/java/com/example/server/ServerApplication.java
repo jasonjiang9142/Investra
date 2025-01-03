@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @SpringBootApplication
 @EnableCaching
-
 public class ServerApplication {
 
 	public static void main(String[] args) {
