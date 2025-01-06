@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 import io.github.cdimascio.dotenv.Dotenv;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,13 @@ import java.time.format.DateTimeParseException;
 @RestController
 @CrossOrigin(origins = "*")
 @Service
-public class Controller {
+public class PriceProgressionController {
+
+    private final RestTemplate restTemplate;
+
+    public PriceProgressionController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public Map<String, Object> fetchDailyApi(String symbol) {
         int maxRetries = 3;
@@ -40,10 +45,11 @@ public class Controller {
 
                 String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo";
 
-                RestTemplate restTemplate = new RestTemplate();
+                // RestTemplate restTemplate = new RestTemplate();
                 Map<String, Object> result = restTemplate.getForObject(url, Map.class);
 
                 System.out.println("Finished fetching api call for " + (attempts + 1));
+                System.out.println(result);
 
                 return result;
 

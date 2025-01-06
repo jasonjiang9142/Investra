@@ -12,7 +12,6 @@ import java.util.Map;
 
 @RestController
 public class CacheController {
-
     @Autowired
     private CacheManager cacheManager;
 
