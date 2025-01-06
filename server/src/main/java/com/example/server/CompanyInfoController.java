@@ -152,18 +152,6 @@ public class CompanyInfoController {
     private ResponseEntity<?> getMetrics(
             @RequestParam String symbol) {
         try {
-            // Dotenv dotenv = Dotenv.load();
-            // String finnhub_token = dotenv.get("finnhub_token");
-
-            // // Build the URL dynamically with the from and to dates
-            // String url = "https://finnhub.io/api/v1/stock/metric?symbol=" + symbol +
-            // "&metric=all&token="
-            // + finnhub_token;
-
-            // // Create RestTemplate instance to make the API request
-            // RestTemplate restTemplate = new RestTemplate();
-            // Map<String, Object> metricsData = restTemplate.getForObject(url, Map.class);
-
             Map<String, Object> metricsData = fetchMetricsAPI(symbol);
 
             return ResponseEntity.ok(metricsData);

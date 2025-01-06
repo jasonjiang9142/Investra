@@ -15,6 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map;
 
@@ -101,8 +102,6 @@ class CompanyInfoTest {
                 isNull(),
                 any(ParameterizedTypeReference.class))).thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
 
-        System.out.println("Expected URL: " + url);
-
         // Mock the exchange method
         List<Map<String, Object>> result = companyInfoController.fetchNewsAPI(symbol, toDate, fromDate);
         System.out.println(result);
@@ -125,6 +124,161 @@ class CompanyInfoTest {
                 eq(HttpMethod.GET),
                 isNull(),
                 any(ParameterizedTypeReference.class));
+    }
+
+    @Test
+    void testFetchProfileAPI() {
+        // Mock the RestTemplate
+        RestTemplate restTemplate = mock(RestTemplate.class);
+
+        // Create the controller and inject the mocked RestTemplate
+        CompanyInfoController companyInfoController = new CompanyInfoController(restTemplate);
+
+        // Test data
+        String symbol = "AAPL";
+
+        // Mock the dotenv behavior (assuming dotenv.get() works fine here)
+        Dotenv dotenv = Dotenv.load();
+        String finnhub_token = dotenv.get("finnhub_token");
+
+        // Build the expected URL dynamically
+        String url = "https://finnhub.io/api/v1/stock/profile2?symbol=" + symbol +
+                "&token=" + finnhub_token;
+
+        // Mock response
+        Map<String, Object> mockResponse = Map.ofEntries(
+                new SimpleEntry<>("country", "US"),
+                new SimpleEntry<>("currency", "USD"),
+                new SimpleEntry<>("exchange", "NASDAQ"),
+                new SimpleEntry<>("finnhubIndustry", "Technology"),
+                new SimpleEntry<>("ipo", "1980-12-12"),
+                new SimpleEntry<>("logo",
+                        "https://static.finnhub.io/logo/2f4b36f8-7a0c-4d3f-8b3d-0b9b5b9b3b0d.png"),
+                new SimpleEntry<>("marketCapitalization", 2000000000000.0),
+                new SimpleEntry<>("name", "Apple Inc"),
+                new SimpleEntry<>("phone", "14089961010"),
+                new SimpleEntry<>("shareOutstanding", 10000000000.0),
+                new SimpleEntry<>("ticker", "AAPL"),
+                new SimpleEntry<>("weburl", "https://www.apple.com/"));
+
+        // Mock behavior for RestTemplate
+        when(restTemplate.exchange(
+                eq(url),
+                eq(HttpMethod.GET),
+                isNull(),
+                any(ParameterizedTypeReference.class)))
+                .thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
+
+        // Call the controller method
+        Map<String, Object> result = companyInfoController.fetchProfileAPI(symbol);
+
+        // Assertions
+        assertThat(result).isNotNull();
+        assertThat(result.get("country")).isEqualTo("US");
+        assertThat(result.get("currency")).isEqualTo("USD");
+        assertThat(result.get("exchange")).isEqualTo("NASDAQ");
+        assertThat(result.get("finnhubIndustry")).isEqualTo("Technology");
+        assertThat(result.get("ipo")).isEqualTo("1980-12-12");
+        assertThat(result.get("logo"))
+                .isEqualTo("https://static.finnhub.io/logo/2f4b36f8-7a0c-4d3f-8b3d-0b9b5b9b3b0d.png");
+        assertThat(result.get("marketCapitalization")).isEqualTo(2000000000000.0);
+        assertThat(result.get("name")).isEqualTo("Apple Inc");
+        assertThat(result.get("phone")).isEqualTo("14089961010");
+        assertThat(result.get("shareOutstanding")).isEqualTo(10000000000.0);
+        assertThat(result.get("ticker")).isEqualTo("AAPL");
+        assertThat(result.get("weburl")).isEqualTo("https://www.apple.com/");
+
+        // Verify that the RestTemplate exchange method was called once with the correct
+        // arguments
+        verify(restTemplate, times(1)).exchange(
+                eq(url),
+                eq(HttpMethod.GET),
+                isNull(),
+                any(ParameterizedTypeReference.class));
+
+    }
+
+    @Test
+    void testFetchMetricsAPI() {
+        // Mock the RestTemplate
+        RestTemplate restTemplate = mock(RestTemplate.class);
+
+        // Create the controller and inject the mocked RestTemplate
+        CompanyInfoController companyInfoController = new CompanyInfoController(restTemplate);
+
+        // Test data
+        String symbol = "AAPL";
+
+        // Mock the dotenv behavior (assuming dotenv.get() works fine here)
+        Dotenv dotenv = Dotenv.load();
+        String finnhub_token = dotenv.get("finnhub_token");
+
+        // Build the expected URL dynamically
+        String url = "https://finnhub.io/api/v1/stock/metric?symbol=" + symbol + "&metric=all&token="
+                + finnhub_token;
+
+        Map<String, Object> mockResponse = Map.ofEntries(
+                new SimpleEntry<>("metrics", Map.of(
+                        "10DayAverageTradingVolume", 2.20878,
+                        "13WeekPriceReturnDaily", 1.3289,
+                        "26WeekPriceReturnDaily", 27.1559,
+                        "3MonthADReturnStd", 24.243816,
+                        "3MonthAverageTradingVolume", 3.24114,
+                        "52WeekHigh", 239.3,
+                        "52WeekHighDate", "2024-12-09",
+                        "52WeekLow", 157.885
+
+                )));
+
+        // Mock behavior for RestTemplate
+        when(restTemplate.exchange(
+                eq(url),
+                eq(HttpMethod.GET),
+                isNull(),
+                any(ParameterizedTypeReference.class)))
+                .thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
+
+        // Call the controller method
+        Map<String, Object> result = companyInfoController.fetchMetricsAPI(symbol);
+
+        // Assertions
+        assertThat(result).isNotNull();
+        assertThat(result.get("metrics")).isNotNull();
+
+        // Get metrics map
+        Map<String, Object> metrics = (Map<String, Object>) result.get("metrics");
+
+        // Assertions for specific metric values
+        assertThat(metrics).containsKey("10DayAverageTradingVolume");
+        assertThat(metrics.get("10DayAverageTradingVolume")).isEqualTo(2.20878);
+
+        assertThat(metrics).containsKey("13WeekPriceReturnDaily");
+        assertThat(metrics.get("13WeekPriceReturnDaily")).isEqualTo(1.3289);
+
+        assertThat(metrics).containsKey("26WeekPriceReturnDaily");
+        assertThat(metrics.get("26WeekPriceReturnDaily")).isEqualTo(27.1559);
+
+        assertThat(metrics).containsKey("3MonthADReturnStd");
+        assertThat(metrics.get("3MonthADReturnStd")).isEqualTo(24.243816);
+
+        assertThat(metrics).containsKey("3MonthAverageTradingVolume");
+        assertThat(metrics.get("3MonthAverageTradingVolume")).isEqualTo(3.24114);
+
+        assertThat(metrics).containsKey("52WeekHigh");
+        assertThat(metrics.get("52WeekHigh")).isEqualTo(239.3);
+
+        assertThat(metrics).containsKey("52WeekHighDate");
+        assertThat(metrics.get("52WeekHighDate")).isEqualTo("2024-12-09");
+
+        assertThat(metrics).containsKey("52WeekLow");
+        assertThat(metrics.get("52WeekLow")).isEqualTo(157.885);
+
+        verify(restTemplate, times(1)).exchange(
+                eq(url),
+                eq(HttpMethod.GET),
+                isNull(),
+                any(ParameterizedTypeReference.class));
+
     }
 
 }
