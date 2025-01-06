@@ -126,4 +126,5 @@ class CompanyInfoTest {
                 isNull(),
                 any(ParameterizedTypeReference.class));
     }
+
 }

@@ -61,10 +61,6 @@ public class CompanyInfoController {
     public ResponseEntity<?> getNews(
             @RequestParam String symbol) {
         try {
-            // Dotenv dotenv = Dotenv.load();
-            // String finnhub_token = dotenv.get("finnhub_token");
-
-            // Get the current date and 3 months ago date
             LocalDate currentDate = LocalDate.now();
             LocalDate oneWeekAgo = currentDate.minusWeeks(2);
 
@@ -84,11 +80,9 @@ public class CompanyInfoController {
         }
     }
 
-    // api to get company profile
-    @GetMapping("/api/info/profile")
-    private ResponseEntity<?> getProfile(
-            @RequestParam String symbol) {
+    public Map<String, Object> fetchProfileAPI(String symbol) {
         try {
+
             Dotenv dotenv = Dotenv.load();
             String finnhub_token = dotenv.get("finnhub_token");
 
@@ -96,8 +90,27 @@ public class CompanyInfoController {
             String url = "https://finnhub.io/api/v1/stock/profile2?symbol=" + symbol + "&token=" + finnhub_token;
 
             // Create RestTemplate instance to make the API request
-            RestTemplate restTemplate = new RestTemplate();
-            Map<String, Object> profileData = restTemplate.getForObject(url, Map.class);
+            Map<String, Object> profileData = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<Map<String, Object>>() {
+                    }).getBody();
+
+            return profileData;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // api to get company profile
+    @GetMapping("/api/info/profile")
+    private ResponseEntity<?> getProfile(
+            @RequestParam String symbol) {
+        try {
+            Map<String, Object> profileData = fetchProfileAPI(symbol);
 
             return ResponseEntity.ok(profileData);
 
@@ -108,11 +121,9 @@ public class CompanyInfoController {
         }
     }
 
-    // api to get company metrics
-    @GetMapping("/api/info/metrics")
-    private ResponseEntity<?> getMetrics(
-            @RequestParam String symbol) {
+    public Map<String, Object> fetchMetricsAPI(String symbol) {
         try {
+
             Dotenv dotenv = Dotenv.load();
             String finnhub_token = dotenv.get("finnhub_token");
 
@@ -121,8 +132,39 @@ public class CompanyInfoController {
                     + finnhub_token;
 
             // Create RestTemplate instance to make the API request
-            RestTemplate restTemplate = new RestTemplate();
-            Map<String, Object> metricsData = restTemplate.getForObject(url, Map.class);
+            Map<String, Object> metricsData = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<Map<String, Object>>() {
+                    }).getBody();
+
+            return metricsData;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // api to get company metrics
+    @GetMapping("/api/info/metrics")
+    private ResponseEntity<?> getMetrics(
+            @RequestParam String symbol) {
+        try {
+            // Dotenv dotenv = Dotenv.load();
+            // String finnhub_token = dotenv.get("finnhub_token");
+
+            // // Build the URL dynamically with the from and to dates
+            // String url = "https://finnhub.io/api/v1/stock/metric?symbol=" + symbol +
+            // "&metric=all&token="
+            // + finnhub_token;
+
+            // // Create RestTemplate instance to make the API request
+            // RestTemplate restTemplate = new RestTemplate();
+            // Map<String, Object> metricsData = restTemplate.getForObject(url, Map.class);
+
+            Map<String, Object> metricsData = fetchMetricsAPI(symbol);
 
             return ResponseEntity.ok(metricsData);
 
