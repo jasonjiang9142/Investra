@@ -21,8 +21,14 @@ ChartJS.register(
   Legend
 );
 
+
+
 const StockChart = ({ priceProgressionDates, priceProgressionRois }) => {
 
+  useEffect(() => {
+    console.log("Entering Stock Chart")
+    console.log(priceProgressionDates)
+  });
   // Process data for Chart.js
   const chartData = {
     labels: priceProgressionDates,  // Use priceProgressionDates for X-axis

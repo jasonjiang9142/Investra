@@ -49,7 +49,6 @@ public class PriceProgressionController {
                 Map<String, Object> result = restTemplate.getForObject(url, Map.class);
 
                 System.out.println("Finished fetching api call for " + (attempts + 1));
-                System.out.println(result);
 
                 return result;
 
@@ -65,64 +64,31 @@ public class PriceProgressionController {
         return Collections.singletonMap("error", "Unexpected error occurred.");
     }
 
-    // api to get the current price
-    public String[] getCurrentPrice(String symbol) {
+    public String[] getPrice(String symbol, String date) {
         try {
-            String[] result_array = new String[2];
-
+            // Fetch data
             Map<String, Object> response = fetchDailyApi(symbol);
-
-            // get the price of the current day
             Map<String, Object> timeSeries = (Map<String, Object>) response.get("Time Series (Daily)");
-            String date = (String) timeSeries.keySet().toArray()[0];
 
-            Map<String, Object> currentDayData = (Map<String, Object>) timeSeries.get(date);
-            String price = (String) currentDayData.get("4. close");
-
-            result_array[0] = price;
-            result_array[1] = date;
-
-            return result_array;
-
-        } catch (Exception e) {
-            e.printStackTrace(); // Log the full error stack trace
-            return new String[] { "Failed to fetch data: " + e.getMessage() };
-        }
-    }
-
-    // api to get the price given the specified date
-    public String[] getDatedPrice(String symbol, String date) {
-        try {
-            String[] result_array = new String[2];
-
-            Map<String, Object> result = fetchDailyApi(symbol);
-
-            // get the price of the current day
-            Map<String, Object> timeSeries = (Map<String, Object>) result.get("Time Series (Daily)");
-
-            // if the key is not in the map
-            if (!timeSeries.containsKey(date)) {
-                // get the date closest to the specified date first by flooring
+            // Use latest date if input date is null
+            if (date == null) {
+                date = (String) timeSeries.keySet().toArray()[0]; // Get the latest date
+            } else if (!timeSeries.containsKey(date)) { // Find closest date if specified date not available
                 TreeMap<String, Object> sortedTimeSeries = new TreeMap<>(timeSeries);
-                String newDate = sortedTimeSeries.floorKey(date);
-
-                // if flooring doesn't work try ceiling it
-                if (newDate == null) {
-                    newDate = sortedTimeSeries.ceilingKey(date);
+                date = sortedTimeSeries.floorKey(date); // Try to find the closest date before
+                if (date == null) {
+                    date = sortedTimeSeries.ceilingKey(date); // Try to find the closest date after
                 }
-                date = newDate;
             }
 
-            Map<String, Object> currentDayData = (Map<String, Object>) timeSeries.get(date);
-            String price = (String) currentDayData.get("4. close");
+            // Extract price for the date
+            Map<String, Object> dayData = (Map<String, Object>) timeSeries.get(date);
+            String price = (String) dayData.get("4. close");
 
-            result_array[0] = price;
-            result_array[1] = date;
-
-            return result_array;
+            return new String[] { price, date };
 
         } catch (Exception e) {
-            e.printStackTrace(); // Log the full error stack trace
+            e.printStackTrace();
             return new String[] { "Failed to fetch data: " + e.getMessage() };
         }
     }
@@ -138,8 +104,11 @@ public class PriceProgressionController {
     ) {
         try {
 
-            String[] datedArray = getDatedPrice(symbol, date);
-            String[] currentArray = getCurrentPrice(symbol);
+            String[] datedArray = getPrice(symbol, date);
+            String[] currentArray = getPrice(symbol, null);
+
+            System.out.println("datedArray: " + datedArray[0]);
+            System.out.println("currentArray: " + currentArray[0]);
 
             // Parse the price strings into doubles for further calculation (if needed)
             double previousPriceValue = Double.parseDouble(datedArray[0]);
@@ -194,7 +163,7 @@ public class PriceProgressionController {
             Map<String, Object> timeSeries = (Map<String, Object>) response.get("Time Series (Daily)");
 
             // Get the start price for the start date
-            Double startPrice = Double.parseDouble(getDatedPrice(symbol, startDate)[0]);
+            Double startPrice = Double.parseDouble(getPrice(symbol, startDate)[0]);
             Double numStock = amountInvested / startPrice; // Number of shares purchased with the invested amount
 
             // Iterate through the time series and calculate ROI for each date
@@ -220,6 +189,8 @@ public class PriceProgressionController {
             Map<String, Object> result = new HashMap<>();
             result.put("dates", dates);
             result.put("rois", rois);
+
+            System.out.println("result: " + result);
 
             return ResponseEntity.ok(result);
 

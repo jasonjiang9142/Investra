@@ -60,11 +60,14 @@ const Root = () => {
         setSearchIsLoading(true);
         const { amount, stockSymbol, inputDate } = searchParams;
         const get_return_on_investment = async () => {
-            setIsLoading(true);
+            setIsLoading(true); // Start loading
+
             try {
                 const queryParams = { symbol: stockSymbol, date: inputDate, amount };
+                console.log(queryParams);
                 const queryString = new URLSearchParams(queryParams).toString();
                 const response = await fetch(`${backendurl}/api/pricenow?${queryString}`);
+                console.log(response)
 
                 if (response.ok) {
                     const data = await response.json();
@@ -79,14 +82,17 @@ const Root = () => {
             } catch (e) {
                 console.error(e);
             } finally {
-                setIsLoading(false);
+                setIsLoading(false); // Stop loading
             }
         };
 
         if (amount && stockSymbol && inputDate) {
             get_return_on_investment();
         }
+    }, [searchParams]);
 
+    // Fetch price progression data when startDate and endDate change
+    useEffect(() => {
         const get_price_progression = async () => {
             const { amount, stockSymbol } = searchParams;
 
@@ -111,7 +117,10 @@ const Root = () => {
         if (startDate && endDate) {
             get_price_progression();
         }
+    }, [startDate, endDate, searchParams]);
 
+    // Fetch company data when stockSymbol changes
+    useEffect(() => {
         const fetchCompanyData = async (endpoint, setter) => {
             const queryParams = { symbol: searchParams.stockSymbol };
             const queryString = new URLSearchParams(queryParams).toString();
@@ -119,15 +128,11 @@ const Root = () => {
 
             if (response.ok) {
                 const data = await response.json();
-
-                if (endpoint == "/api/info/metrics") {
+                if (endpoint == '/api/info/metrics') {
                     setter(data.metric);
-                }
-                else {
+                } else {
                     setter(data);
-
                 }
-
             } else {
                 console.error(`Error fetching data from ${endpoint}`);
             }
@@ -138,11 +143,7 @@ const Root = () => {
             fetchCompanyData("/api/info/profile", setCompanyInfo);
             fetchCompanyData("/api/info/metrics", setCompanyMetrics);
         }
-
-        setSearchIsLoading(false);
-
-
-    }, [searchParams]);
+    }, [searchParams.stockSymbol]);
 
 
 
@@ -156,13 +157,89 @@ const Root = () => {
     return (
         <div>
             {!hasSearched ? (
-                <div className="flex items-center justify-center h-screen">
-                    <SearchForm passDataToGrandparent={passDataToGrandparent} />
+                <div className="min-h-screen bg-gray-50 p-16 flex flex-col items-center">
+                    {/* Header */}
+                    <header className="w-full max-w-4xl mb-8 text-center">
+                        <h1 className="text-4xl font-bold text-gray-800 mb-4">Stock Growth Simulator</h1>
+                        <p className="text-gray-500 text-lg">
+                            Calculate how much your investment in your favorite stock would be worth today!
+                        </p>
+                    </header>
+
+                    {/* Main Container */}
+                    <div className="flex w-full max-w-6xl gap-12 items-center justify-center">
+
+
+                        {/* Stock Cards */}
+                        <div className="w-1/2 grid grid-cols-2 gap-6">
+                            {/* Example Stock Card 1 */}
+                            <div className="bg-white p-6 rounded-lg shadow-lg">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-xl font-semibold text-gray-800">AAPL</h2>
+                                    <span className="text-green-500 font-medium">+12.3%</span>
+                                </div>
+                                <p className="text-gray-500 mb-4">Apple Inc.</p>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-lg font-bold text-gray-800">$14,500</span>
+                                    <span className="text-gray-500 text-sm">Initial: $10,000</span>
+                                </div>
+                            </div>
+
+                            {/* Example Stock Card 2 */}
+                            <div className="bg-white p-6 rounded-lg shadow-lg">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-xl font-semibold text-gray-800">TSLA</h2>
+                                    <span className="text-red-500 font-medium">-5.6%</span>
+                                </div>
+                                <p className="text-gray-500 mb-4">Tesla, Inc.</p>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-lg font-bold text-gray-800">$9,450</span>
+                                    <span className="text-gray-500 text-sm">Initial: $10,000</span>
+                                </div>
+                            </div>
+
+                            {/* Example Stock Card 3 */}
+                            <div className="bg-white p-6 rounded-lg shadow-lg">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-xl font-semibold text-gray-800">MSFT</h2>
+                                    <span className="text-green-500 font-medium">+8.2%</span>
+                                </div>
+                                <p className="text-gray-500 mb-4">Microsoft Corp.</p>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-lg font-bold text-gray-800">$10,820</span>
+                                    <span className="text-gray-500 text-sm">Initial: $10,000</span>
+                                </div>
+                            </div>
+
+                            {/* Example Stock Card 4 */}
+                            <div className="bg-white p-6 rounded-lg shadow-lg">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-xl font-semibold text-gray-800">AMZN</h2>
+                                    <span className="text-green-500 font-medium">+20.5%</span>
+                                </div>
+                                <p className="text-gray-500 mb-4">Amazon.com Inc.</p>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-lg font-bold text-gray-800">$12,050</span>
+                                    <span className="text-gray-500 text-sm">Initial: $10,000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Enlarged Search Box */}
+                        <div className="w-1/2 bg-white shadow-lg rounded-lg p-8">
+                            <label htmlFor="search" className="block text-xl font-medium text-gray-700 mb-6">
+                                Search for a Stock
+                            </label>
+                            <SearchForm id="search" passDataToGrandparent={passDataToGrandparent} />
+                        </div>
+                    </div>
                 </div>
-            ) : searchIsLoading ? (
-                <LoadingState message="Fetching company information..." />
+
+
+
             ) : (
                 <div>
+
                     <Navbar passDataToGrandparent={passDataToGrandparent} />
 
                     <div className="mx-32 my-8">
