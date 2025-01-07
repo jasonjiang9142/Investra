@@ -142,7 +142,7 @@ const SearchForm = ({ passDataToParent, passDataToGrandparent }) => {
 
                     {/* Submit Button */}
                     <Button type="submit" className='w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition ease-in-out duration-300'>
-                        Submit
+                        Search Stock
                     </Button>
                 </form>
             </Form>

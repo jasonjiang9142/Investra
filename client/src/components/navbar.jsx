@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import SearchForm from "./searchform";
+import { FaSearch } from 'react-icons/fa';
 
 const Navbar = ({ passDataToGrandparent }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -33,9 +34,9 @@ const Navbar = ({ passDataToGrandparent }) => {
 
 
     return (
-        <nav className="bg-white shadow-lg sticky top-0 z-10 py-4">
+        <nav className="bg-white shadow-lg sticky top-0 z-10 py-2 rounded-full">
             <div className="max-w-7xl mx-auto ">
-                <div className="flex justify-between items-center h-16">
+                <div className="flex justify-between items-center h-16 px-20">
 
                     {/* Logo Section */}
                     <div className="flex items-center">
@@ -49,15 +50,16 @@ const Navbar = ({ passDataToGrandparent }) => {
                         <a
                             href="#"
                             onClick={handleSearchClick}
-                            className="text-gray-700 hover:text-blue-600 transition duration-200 cursor-pointer"
+                            className="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200 cursor-pointer"
                         >
+                            <FaSearch className="mr-2" /> {/* Add margin to the right of the icon */}
                             Search
                         </a>
                     </div>
 
                     {/* Form Dropdown */}
                     {isOpen && (
-                        <div className="absolute top-16 right-4 w-96  shadow-lg rounded-lg border border-gray-100">
+                        <div className="absolute top-16 right-4 w-96  shadow-lg rounded-lg border border-gray-100 bg-white">
                             <SearchForm passDataToParent={passDataToParent} />
                         </div>
                     )}
@@ -66,18 +68,6 @@ const Navbar = ({ passDataToGrandparent }) => {
         </nav>
 
     );
-    // };
-    // const SearchForm1 = ({ passDataToGrandparent }) => {
-
-    //     const passDataToParent = (data) => {
-    //         passDataToGrandparent(data);
-    //     };
-
-    //     return (
-    //         <div className="absolute top-16 right-0 w-96 bg-white shadow-lg p-4">
-    //             <SearchForm passDataToParent={passDataToParent} />
-    //         </div>
-    //     );
 };
 
 export default Navbar;
