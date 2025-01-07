@@ -33,77 +33,85 @@ import io.github.cdimascio.dotenv.Dotenv;
 @SpringBootTest
 public class PriceProgressionTest {
 
-    @Mock
-    private RestTemplate restTemplate;
+        @Mock
+        private RestTemplate restTemplate;
 
-    @InjectMocks
-    private PriceProgressionController PriceProgressionController;
+        @Mock
+        private CacheService cache;
 
-    @Test
-    void contextLoads() throws Exception {
-        assertThat(PriceProgressionController).isNotNull();
-    }
+        @InjectMocks
+        private PriceProgressionController PriceProgressionController;
 
-    @Test
-    void testFetchDailyApi() {
-        // Mock the Dotenv class
-        Dotenv dotenv = mock(Dotenv.class);
-        when(dotenv.get("alpha_advantage_key")).thenReturn("demo");
+        @Test
+        void contextLoads() throws Exception {
+                assertThat(PriceProgressionController).isNotNull();
+        }
 
-        // Mock the RestTemplate
-        Map<String, Object> mockResponse = Map.ofEntries(
-                Map.entry("Meta Data", Map.of(
-                        "1. Information", "Daily Prices (open, high, low, close) and Volumes",
-                        "2. Symbol", "IBM",
-                        "3. Last Refreshed", "2025-01-03",
-                        "4. Output Size", "Full size",
-                        "5. Time Zone", "US/Eastern")),
-                Map.entry("Time Series (Daily)", Map.of(
-                        "2025-01-03", Map.of(
-                                "1. open", "220.5500",
-                                "2. high", "223.6600",
-                                "3. low", "220.5500",
-                                "4. close", "222.6500",
-                                "5. volume", "3873578"),
-                        "2025-01-02", Map.of(
-                                "1. open", "221.8200",
-                                "2. high", "222.4900",
-                                "3. low", "217.6000",
-                                "4. close", "219.9400",
-                                "5. volume", "2579498"))));
+        @Test
+        void testFetchDailyApi() {
+                // Mock the Dotenv class
+                Dotenv dotenv = mock(Dotenv.class);
+                when(dotenv.get("alpha_advantage_key")).thenReturn("demo");
 
-        // String url =
-        // "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" +
-        // symbol + "&outputsize=full&apikey=" + alpha_advantage_key;
+                // Mock the RestTemplate
+                Map<String, Object> mockResponse = Map.ofEntries(
+                                Map.entry("Meta Data", Map.of(
+                                                "1. Information", "Daily Prices (open, high, low, close) and Volumes",
+                                                "2. Symbol", "IBM",
+                                                "3. Last Refreshed", "2025-01-03",
+                                                "4. Output Size", "Full size",
+                                                "5. Time Zone", "US/Eastern")),
+                                Map.entry("Time Series (Daily)", Map.of(
+                                                "2025-01-03", Map.of(
+                                                                "1. open", "220.5500",
+                                                                "2. high", "223.6600",
+                                                                "3. low", "220.5500",
+                                                                "4. close", "222.6500",
+                                                                "5. volume", "3873578"),
+                                                "2025-01-02", Map.of(
+                                                                "1. open", "221.8200",
+                                                                "2. high", "222.4900",
+                                                                "3. low", "217.6000",
+                                                                "4. close", "219.9400",
+                                                                "5. volume", "2579498"))));
 
-        String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo";
+                // String url =
+                // "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" +
+                // symbol + "&outputsize=full&apikey=" + alpha_advantage_key;
 
-        when(restTemplate.getForObject(eq(
-                url),
-                eq(Map.class)))
-                .thenReturn(mockResponse);
+                String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo";
 
-        // Create the controller and inject the mocked RestTemplate
-        PriceProgressionController priceProgressionController = new PriceProgressionController(restTemplate);
+                when(restTemplate.getForObject(eq(
+                                url),
+                                eq(Map.class)))
+                                .thenReturn(mockResponse);
 
-        Map<String, Object> result = priceProgressionController.fetchDailyApi("IBM");
+                when(cache.getCache("IBM")).thenReturn(null);
 
-        // Assertions
-        assertThat(result).isNotNull();
-        assertThat(result).containsKey("Meta Data");
-        assertThat(result).containsKey("Time Series (Daily)");
+                // Create the controller and inject the mocked RestTemplate
+                // Create the controller and inject the mocked RestTemplate and cache
+                PriceProgressionController priceProgressionController = new PriceProgressionController(restTemplate,
+                                cache);
 
-        Map<String, Object> metaData = (Map<String, Object>) result.get("Meta Data");
-        assertThat(metaData.get("2. Symbol")).isEqualTo("IBM");
+                Map<String, Object> result = priceProgressionController.fetchDailyApi("IBM");
 
-        Map<String, Object> timeSeries = (Map<String, Object>) result.get("Time Series (Daily)");
-        assertThat(timeSeries).containsKey("2025-01-03");
+                // Assertions
+                assertThat(result).isNotNull();
+                assertThat(result).containsKey("Meta Data");
+                assertThat(result).containsKey("Time Series (Daily)");
 
-        Map<String, String> dailyData = (Map<String, String>) timeSeries.get("2025-01-03");
-        assertThat(dailyData.get("1. open")).isEqualTo("220.5500");
-        assertThat(dailyData.get("4. close")).isEqualTo("222.6500");
+                Map<String, Object> metaData = (Map<String, Object>) result.get("Meta Data");
+                assertThat(metaData.get("2. Symbol")).isEqualTo("IBM");
 
-        verify(restTemplate, times(1)).getForObject(eq(
-                "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo"),
-                eq(Map.class));
-    }
+                Map<String, Object> timeSeries = (Map<String, Object>) result.get("Time Series (Daily)");
+                assertThat(timeSeries).containsKey("2025-01-03");
+
+                Map<String, String> dailyData = (Map<String, String>) timeSeries.get("2025-01-03");
+                assertThat(dailyData.get("1. open")).isEqualTo("220.5500");
+                assertThat(dailyData.get("4. close")).isEqualTo("222.6500");
+
+                verify(restTemplate, times(1)).getForObject(eq(
+                                url),
+                                eq(Map.class));
+        }
+}

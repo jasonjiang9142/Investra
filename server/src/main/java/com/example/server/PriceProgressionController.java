@@ -13,19 +13,35 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @CrossOrigin(origins = "*")
 @Service
 public class PriceProgressionController {
 
-    private final RestTemplate restTemplate;
+    // private final RestTemplate restTemplate;
 
-    public PriceProgressionController(RestTemplate restTemplate) {
+    // public PriceProgressionController(RestTemplate restTemplate) {
+    // this.restTemplate = restTemplate;
+    // }
+
+    private final RestTemplate restTemplate;
+    private final CacheService cacheService;
+
+    @Autowired
+    public PriceProgressionController(RestTemplate restTemplate, CacheService cacheService) {
         this.restTemplate = restTemplate;
+        this.cacheService = cacheService;
     }
 
     public Map<String, Object> fetchDailyApi(String symbol) {
+        Map<String, Object> cachedData = cacheService.getCache(symbol);
+        if (cachedData != null) {
+            System.out.println("Using cached data for " + symbol);
+            return cachedData; // Return cached data if available
+        }
+
         int maxRetries = 3;
         int attempts = 0;
 
@@ -47,6 +63,8 @@ public class PriceProgressionController {
 
                 // RestTemplate restTemplate = new RestTemplate();
                 Map<String, Object> result = restTemplate.getForObject(url, Map.class);
+
+                cacheService.updateCache(symbol, result);
 
                 System.out.println("Finished fetching api call for " + (attempts + 1));
 
