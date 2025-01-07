@@ -38,7 +38,7 @@ const FormSchema = z.object({
     stockSymbol: z.string().nonempty("Stock symbol is required"),
 });
 
-const SearchForm = ({ passDataToParent }) => {
+const SearchForm = ({ passDataToParent, passDataToGrandparent }) => {
     const [amount, setAmount] = useState(null);
     const [stockSymbol, setStockSymbol] = useState(null);
     const [inputDate, setInputDate] = useState(null);
@@ -60,12 +60,17 @@ const SearchForm = ({ passDataToParent }) => {
         setInputDate(date);
 
         // pass props to parent
-        passDataToParent({ date, amount, stockSymbol });
 
+        // passDataToParent({ date, amount, stockSymbol });
+        if (passDataToParent) {
+            passDataToParent({ date, amount, stockSymbol }); // Through parent
+        }
 
+        if (passDataToGrandparent) {
+            passDataToGrandparent({ date, amount, stockSymbol }); // Direct to grandparent
+        }
 
     };
-
 
     return (
         <div className='mx-6 my-8'>

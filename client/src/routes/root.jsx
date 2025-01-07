@@ -5,9 +5,10 @@ import CompanyNews from "../components/companyNews";
 import { backendurl } from "@/utilities";
 import CompanyMetrics from "../components/companyMetrics";
 import Navbar from "../components/navbar";
+import SearchForm from "../components/searchform";
+import { set } from "date-fns";
 
 const Root = () => {
-    // Consolidated state for search parameters
     const [searchParams, setSearchParams] = useState({
         amount: null,
         stockSymbol: null,
@@ -26,30 +27,44 @@ const Root = () => {
     const [companyMetrics, setCompanyMetrics] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Function to handle search data
+
+    // New state to track if the user has submitted the search
+    const [hasSearched, setHasSearched] = useState(false);
+    const [searchIsLoading, setSearchIsLoading] = useState(false);
+
     const passDataToGrandparent = (dataFromParent) => {
-        setIsLoading(true); // Trigger global loading
+        setIsLoading(true);
+
+        // Clear existing data
+        setStartDate(null);
+        setEndDate(null);
+        setCurrentPrice(null);
+        setPreviousPrice(null);
+        setReturnOnInvestment(null);
+        setPriceProgressionDates([]);
+        setPriceProgressionRois([]);
+        setCompanyInfo(null);
+        setCompanyNews([]);
+        setCompanyMetrics(null);
+
         setSearchParams({
             amount: dataFromParent.amount,
             stockSymbol: dataFromParent.stockSymbol,
             inputDate: dataFromParent.date,
         });
-
+        setHasSearched(true); // Update search status
     };
 
-    // Fetch ROI data when searchParams change
+
     useEffect(() => {
+        setSearchIsLoading(true);
         const { amount, stockSymbol, inputDate } = searchParams;
-
         const get_return_on_investment = async () => {
-            setIsLoading(true); // Start loading
-
+            setIsLoading(true);
             try {
                 const queryParams = { symbol: stockSymbol, date: inputDate, amount };
-                console.log(queryParams);
                 const queryString = new URLSearchParams(queryParams).toString();
                 const response = await fetch(`${backendurl}/api/pricenow?${queryString}`);
-                console.log(response)
 
                 if (response.ok) {
                     const data = await response.json();
@@ -64,17 +79,14 @@ const Root = () => {
             } catch (e) {
                 console.error(e);
             } finally {
-                setIsLoading(false); // Stop loading
+                setIsLoading(false);
             }
         };
 
         if (amount && stockSymbol && inputDate) {
             get_return_on_investment();
         }
-    }, [searchParams]);
 
-    // Fetch price progression data when startDate and endDate change
-    useEffect(() => {
         const get_price_progression = async () => {
             const { amount, stockSymbol } = searchParams;
 
@@ -99,10 +111,7 @@ const Root = () => {
         if (startDate && endDate) {
             get_price_progression();
         }
-    }, [startDate, endDate, searchParams]);
 
-    // Fetch company data when stockSymbol changes
-    useEffect(() => {
         const fetchCompanyData = async (endpoint, setter) => {
             const queryParams = { symbol: searchParams.stockSymbol };
             const queryString = new URLSearchParams(queryParams).toString();
@@ -110,7 +119,15 @@ const Root = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                setter(data);
+
+                if (endpoint == "/api/info/metrics") {
+                    setter(data.metric);
+                }
+                else {
+                    setter(data);
+
+                }
+
             } else {
                 console.error(`Error fetching data from ${endpoint}`);
             }
@@ -121,7 +138,13 @@ const Root = () => {
             fetchCompanyData("/api/info/profile", setCompanyInfo);
             fetchCompanyData("/api/info/metrics", setCompanyMetrics);
         }
-    }, [searchParams.stockSymbol]);
+
+        setSearchIsLoading(false);
+
+
+    }, [searchParams]);
+
+
 
     const LoadingState = ({ message = "Loading data..." }) => (
         <div className="flex flex-col items-center justify-center h-full">
@@ -132,52 +155,62 @@ const Root = () => {
 
     return (
         <div>
-            <Navbar passDataToGrandparent={passDataToGrandparent} />
-
-            <div className="mx-32 my-8">
-                <div>
-                    {companyInfo ? (
-                        <CompanyInfo
-                            companyInfo={companyInfo}
-                            startDate={startDate}
-                            endDate={endDate}
-                            currentPrice={currentPrice}
-                            previousPrice={previousPrice}
-                            returnOnInvestment={returnOnInvestment}
-                            amount={searchParams.amount}
-                        />
-                    ) : (
-                        <LoadingState message="Fetching company information..." />
-                    )}
+            {!hasSearched ? (
+                <div className="flex items-center justify-center h-screen">
+                    <SearchForm passDataToGrandparent={passDataToGrandparent} />
                 </div>
-
+            ) : searchIsLoading ? (
+                <LoadingState message="Fetching company information..." />
+            ) : (
                 <div>
-                    {priceProgressionDates.length > 0 && priceProgressionRois.length > 0 ? (
-                        <StockChart
-                            priceProgressionDates={priceProgressionDates}
-                            priceProgressionRois={priceProgressionRois}
-                        />
-                    ) : (
-                        <LoadingState message="Fetching stock chart data..." />
-                    )}
-                </div>
+                    <Navbar passDataToGrandparent={passDataToGrandparent} />
 
-                <div>
-                    {companyMetrics ? (
-                        <CompanyMetrics companyMetrics={companyMetrics} />
-                    ) : (
-                        <LoadingState message="Fetching company metrics..." />
-                    )}
-                </div>
+                    <div className="mx-32 my-8">
+                        <div>
+                            {companyInfo ? (
+                                <CompanyInfo
+                                    companyInfo={companyInfo}
+                                    startDate={startDate}
+                                    endDate={endDate}
+                                    currentPrice={currentPrice}
+                                    previousPrice={previousPrice}
+                                    returnOnInvestment={returnOnInvestment}
+                                    amount={searchParams.amount}
+                                />
+                            ) : (
+                                <LoadingState message="Fetching company information..." />
+                            )}
+                        </div>
 
-                <div>
-                    {companyInfo && companyNews.length > 0 ? (
-                        <CompanyNews companyNews={companyNews} companyInfo={companyInfo} />
-                    ) : (
-                        <LoadingState message="Fetching news articles..." />
-                    )}
+                        <div>
+                            {priceProgressionDates.length > 0 && priceProgressionRois.length > 0 ? (
+                                <StockChart
+                                    priceProgressionDates={priceProgressionDates}
+                                    priceProgressionRois={priceProgressionRois}
+                                />
+                            ) : (
+                                <LoadingState message="Fetching stock chart data..." />
+                            )}
+                        </div>
+
+                        <div>
+                            {companyMetrics ? (
+                                <CompanyMetrics companyMetrics={companyMetrics} />
+                            ) : (
+                                <LoadingState message="Fetching company metrics..." />
+                            )}
+                        </div>
+
+                        <div>
+                            {companyInfo && companyNews.length > 0 ? (
+                                <CompanyNews companyNews={companyNews} companyInfo={companyInfo} />
+                            ) : (
+                                <LoadingState message="Fetching news articles..." />
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
