@@ -2,9 +2,11 @@ package com.example.server;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -23,14 +25,30 @@ import org.springframework.stereotype.Service;
 @CrossOrigin(origins = "*")
 @Service
 public class CompanyInfoController {
-    private final RestTemplate restTemplate;
+    // private final RestTemplate restTemplate;
 
-    // Constructor to inject RestTemplate (for testing purposes)
-    public CompanyInfoController(RestTemplate restTemplate) {
+    // // Constructor to inject RestTemplate (for testing purposes)
+    // public CompanyInfoController(RestTemplate restTemplate) {
+    // this.restTemplate = restTemplate;
+    // }
+
+    private final RestTemplate restTemplate;
+    private final CacheService cacheService; // Inject CacheService
+
+    // Constructor to inject RestTemplate and CacheService
+    @Autowired
+    public CompanyInfoController(RestTemplate restTemplate, CacheService cacheService) {
         this.restTemplate = restTemplate;
+        this.cacheService = cacheService;
     }
 
     public List<Map<String, Object>> fetchNewsAPI(String symbol, String toDate, String fromDate) {
+        Map<String, Object> cachedData = cacheService.getCache("news:" + symbol + ":" + fromDate + ":" + toDate);
+        if (cachedData != null) {
+            System.out.println("Using cached data for " + symbol + " from " + fromDate + " to " + toDate);
+            return (List<Map<String, Object>>) cachedData.get("data");
+        }
+
         try {
 
             Dotenv dotenv = Dotenv.load();
@@ -47,6 +65,10 @@ public class CompanyInfoController {
                     null,
                     new ParameterizedTypeReference<List<Map<String, Object>>>() {
                     }).getBody();
+
+            Map<String, Object> cacheData = new HashMap<>();
+            cacheData.put("data", newsData);
+            cacheService.updateCache("news:" + symbol + ":" + fromDate + ":" + toDate, cacheData);
 
             return newsData;
 
@@ -81,6 +103,13 @@ public class CompanyInfoController {
     }
 
     public Map<String, Object> fetchProfileAPI(String symbol) {
+
+        Map<String, Object> cachedData = cacheService.getCache("profile:" + symbol);
+        if (cachedData != null) {
+            System.out.println("Using cached data for profile " + symbol);
+            return (Map<String, Object>) cachedData.get("data");
+        }
+
         try {
 
             Dotenv dotenv = Dotenv.load();
@@ -96,6 +125,10 @@ public class CompanyInfoController {
                     null,
                     new ParameterizedTypeReference<Map<String, Object>>() {
                     }).getBody();
+
+            Map<String, Object> cacheData = new HashMap<>();
+            cacheData.put("data", profileData);
+            cacheService.updateCache("profile:" + symbol, cacheData);
 
             return profileData;
 
@@ -122,6 +155,12 @@ public class CompanyInfoController {
     }
 
     public Map<String, Object> fetchMetricsAPI(String symbol) {
+        Map<String, Object> cachedData = cacheService.getCache("metrics:" + symbol);
+        if (cachedData != null) {
+            System.out.println("Using cached data for metrics " + symbol);
+            return (Map<String, Object>) cachedData.get("data");
+        }
+
         try {
 
             Dotenv dotenv = Dotenv.load();
@@ -138,6 +177,12 @@ public class CompanyInfoController {
                     null,
                     new ParameterizedTypeReference<Map<String, Object>>() {
                     }).getBody();
+
+            // Cache the result
+            Map<String, Object> cacheData = new HashMap<>();
+            cacheData.put("data", metricsData);
+
+            cacheService.updateCache("metrics:" + symbol, cacheData);
 
             return metricsData;
 
