@@ -25,10 +25,6 @@ ChartJS.register(
 
 const StockChart = ({ priceProgressionDates, priceProgressionRois }) => {
 
-  useEffect(() => {
-    console.log("Entering Stock Chart")
-    console.log(priceProgressionDates)
-  });
   // Process data for Chart.js
   const chartData = {
     labels: priceProgressionDates,  // Use priceProgressionDates for X-axis
@@ -48,6 +44,10 @@ const StockChart = ({ priceProgressionDates, priceProgressionRois }) => {
 
   // Chart options for better design
   const chartOptions = {
+    animation: {
+      duration: 1000,  // Duration of the animation in milliseconds
+      easing: 'easeInOutQuad',  // Easing function for the animation
+    },
     responsive: true,
     plugins: {
       title: {

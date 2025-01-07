@@ -3,11 +3,6 @@ import { useEffect, useState } from "react";
 const CompanyNews = ({ companyNews, companyInfo }) => {
     const [visibleNews, setVisibleNews] = useState(10); // Initially show 10 news articles
 
-    useEffect(() => {
-        console.log("---");
-        console.log("company news", companyNews);
-        console.log("company info", companyInfo);
-    }, []);
 
     // Function to load more news
     const loadMoreNews = () => {

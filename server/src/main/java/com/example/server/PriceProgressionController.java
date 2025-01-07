@@ -20,12 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Service
 public class PriceProgressionController {
 
-    // private final RestTemplate restTemplate;
-
-    // public PriceProgressionController(RestTemplate restTemplate) {
-    // this.restTemplate = restTemplate;
-    // }
-
     private final RestTemplate restTemplate;
     private final CacheService cacheService;
 
@@ -91,6 +85,7 @@ public class PriceProgressionController {
             // Use latest date if input date is null
             if (date == null) {
                 date = (String) timeSeries.keySet().toArray()[0]; // Get the latest date
+
             } else if (!timeSeries.containsKey(date)) { // Find closest date if specified date not available
                 TreeMap<String, Object> sortedTimeSeries = new TreeMap<>(timeSeries);
                 date = sortedTimeSeries.floorKey(date); // Try to find the closest date before
@@ -132,12 +127,20 @@ public class PriceProgressionController {
             double previousPriceValue = Double.parseDouble(datedArray[0]);
             double currentPriceValue = Double.parseDouble(currentArray[0]);
 
+            System.out.println("here");
+
             String previousDate = datedArray[1];
             String currentDate = currentArray[1];
 
             // Calculate the return on investment based on the prices
             double returnOnInvestment = (currentPriceValue - previousPriceValue)
                     * (amount / previousPriceValue);
+
+            System.out.println("returnOnInvestment: " + returnOnInvestment);
+            System.out.println("previousPriceValue: " + previousPriceValue);
+            System.out.println("currentPriceValue: " + currentPriceValue);
+            System.out.println("previousDate: " + previousDate);
+            System.out.println("currentDate: " + currentDate);
 
             return ResponseEntity.ok(Map.of(
                     "returnOnInvestment", returnOnInvestment,
@@ -207,8 +210,6 @@ public class PriceProgressionController {
             Map<String, Object> result = new HashMap<>();
             result.put("dates", dates);
             result.put("rois", rois);
-
-            System.out.println("result: " + result);
 
             return ResponseEntity.ok(result);
 

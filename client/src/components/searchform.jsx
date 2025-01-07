@@ -67,6 +67,7 @@ const SearchForm = ({ passDataToParent, passDataToGrandparent }) => {
         }
 
         if (passDataToGrandparent) {
+
             passDataToGrandparent({ date, amount, stockSymbol }); // Direct to grandparent
         }
 

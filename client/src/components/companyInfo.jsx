@@ -3,10 +3,6 @@ import { useEffect, useState } from "react";
 const CompanyInfo = ({ companyInfo, startDate, endDate, currentPrice, previousPrice, returnOnInvestment, amount }) => {
 
 
-    useEffect(() => {
-        console.log("Entering Company Info Page");
-        console.log(companyInfo);
-    }, []);
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: '2-digit' };

@@ -2,10 +2,6 @@ import { useEffect } from "react";
 
 const CompanyMetrics = ({ companyMetrics }) => {
 
-    useEffect(() => {
-        console.log("Entering Company Metrics Page");
-    })
-
     const mapMetrics = {
         "5 Day Price Return Daily": companyMetrics["5DayPriceReturnDaily"] || "Data Not Available",
         "13 Week Price Return Daily": companyMetrics["13WeekPriceReturnDaily"] || "Data Not Available",

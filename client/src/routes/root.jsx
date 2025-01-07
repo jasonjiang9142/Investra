@@ -52,11 +52,20 @@ const Root = () => {
             stockSymbol: dataFromParent.stockSymbol,
             inputDate: dataFromParent.date,
         });
+
+        console.log("------------------ Starting a new query----------------------")
+        console.log(searchParams)
         setHasSearched(true); // Update search status
     };
 
 
     useEffect(() => {
+        console.log(searchParams)
+        if (!searchParams.amount || !searchParams.stockSymbol) {
+            return;
+        }
+        console.log('==============================================')
+        console.log('Entering get_return_on_investment')
         setSearchIsLoading(true);
         const { amount, stockSymbol, inputDate } = searchParams;
         const get_return_on_investment = async () => {
@@ -64,18 +73,20 @@ const Root = () => {
 
             try {
                 const queryParams = { symbol: stockSymbol, date: inputDate, amount };
-                console.log(queryParams);
                 const queryString = new URLSearchParams(queryParams).toString();
                 const response = await fetch(`${backendurl}/api/pricenow?${queryString}`);
-                console.log(response)
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log(data)
                     setStartDate(data.previousDate);
                     setEndDate(data.currentDate);
                     setCurrentPrice(data.currentPrice);
                     setPreviousPrice(data.previousPrice);
                     setReturnOnInvestment(data.returnOnInvestment);
+
+                    console.log('start date:', startDate, 'end date:', endDate, 'current price:', currentPrice, 'previous price:', previousPrice, 'return on investment:', returnOnInvestment)
+                    console.log("Ending return on investment")
                 } else {
                     console.error("Error fetching ROI data");
                 }
@@ -86,13 +97,30 @@ const Root = () => {
             }
         };
 
-        if (amount && stockSymbol && inputDate) {
-            get_return_on_investment();
-        }
+
+        get_return_on_investment();
+
+
     }, [searchParams]);
+
+    // Optional: track when state changes and log updated values
+    useEffect(() => {
+        if (startDate || endDate || currentPrice || previousPrice || returnOnInvestment) {
+            console.log('Updated ROI data:', {
+                startDate, endDate, currentPrice, previousPrice, returnOnInvestment
+            });
+        }
+    }, [startDate, endDate, currentPrice, previousPrice, returnOnInvestment]);
+
 
     // Fetch price progression data when startDate and endDate change
     useEffect(() => {
+        if (!startDate || !endDate || !searchParams.amount || !searchParams.stockSymbol) {
+            return;
+        }
+
+        console.log('==============================================')
+        console.log('Entering get_price_progression')
         const get_price_progression = async () => {
             const { amount, stockSymbol } = searchParams;
 
@@ -109,6 +137,8 @@ const Root = () => {
                 const data = await response.json();
                 setPriceProgressionDates(data.dates.reverse());
                 setPriceProgressionRois(data.rois.reverse());
+                console.log('price progression dates:', priceProgressionDates, 'price progression rois:', priceProgressionRois)
+                console.log("Ending price progression")
             } else {
                 console.error("Error fetching price progression data");
             }
@@ -117,11 +147,20 @@ const Root = () => {
         if (startDate && endDate) {
             get_price_progression();
         }
-    }, [startDate, endDate, searchParams]);
+    }, [startDate, endDate, currentPrice, previousPrice, returnOnInvestment]);
 
     // Fetch company data when stockSymbol changes
     useEffect(() => {
+        if (!searchParams.stockSymbol) {
+            return
+        }
+
+        console.log('==============================================')
+        console.log('Entering get_company_data')
+
         const fetchCompanyData = async (endpoint, setter) => {
+            console.log('Fetching company data for:', endpoint)
+
             const queryParams = { symbol: searchParams.stockSymbol };
             const queryString = new URLSearchParams(queryParams).toString();
             const response = await fetch(`${backendurl}${endpoint}?${queryString}`);
@@ -133,6 +172,8 @@ const Root = () => {
                 } else {
                     setter(data);
                 }
+                console.log('company data:', data)
+                console.log("Ending company data")
             } else {
                 console.error(`Error fetching data from ${endpoint}`);
             }
@@ -143,7 +184,9 @@ const Root = () => {
             fetchCompanyData("/api/info/profile", setCompanyInfo);
             fetchCompanyData("/api/info/metrics", setCompanyMetrics);
         }
-    }, [searchParams.stockSymbol]);
+
+        console.log('Ending get_company_data')
+    }, [startDate, endDate, currentPrice, previousPrice, returnOnInvestment]);
 
 
 
