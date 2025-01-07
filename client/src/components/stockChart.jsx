@@ -54,7 +54,7 @@ const StockChart = ({ priceProgressionDates, priceProgressionRois }) => {
         display: false,
         text: 'Stock Price Progression',
         font: {
-          size: 18,
+          size: 24,
         },
       },
       tooltip: {
@@ -95,9 +95,10 @@ const StockChart = ({ priceProgressionDates, priceProgressionRois }) => {
   };
 
   return (
-    <div className="px-4 py-2">
+    <div className="px-4 py-3">
       {priceProgressionDates.length > 0 && priceProgressionRois.length > 0 ? (
         <div>
+          <h1 className='text-center font-semibold text-lg pb-4'>Your Returns Throughout the Years</h1>
           <div className="relative w-10/12 mx-auto">
             <Line data={chartData} options={chartOptions} />
           </div>

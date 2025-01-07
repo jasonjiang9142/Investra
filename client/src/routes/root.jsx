@@ -167,7 +167,7 @@ const Root = () => {
                     </header>
 
                     {/* Main Container */}
-                    <div className="flex w-full max-w-6xl gap-12 items-center justify-center">
+                    <div className="flex w-full max-w-6xl gap-12 items-center justify-center mt-16">
 
 
                         {/* Stock Cards */}
@@ -227,7 +227,10 @@ const Root = () => {
 
                         {/* Enlarged Search Box */}
                         <div className="w-1/2 bg-white shadow-lg rounded-lg p-8">
-                            <label htmlFor="search" className="block text-xl font-medium text-gray-700 mb-6">
+                            <label
+                                htmlFor="search"
+                                className="block text-2xl font-semibold text-gray-800 mb-6 text-center transform transition duration-300 ease-in-out "
+                            >
                                 Search for a Stock
                             </label>
                             <SearchForm id="search" passDataToGrandparent={passDataToGrandparent} />
@@ -242,7 +245,7 @@ const Root = () => {
 
                     <Navbar passDataToGrandparent={passDataToGrandparent} />
 
-                    <div className="mx-32 my-8">
+                    <div className="mx-32 my-4">
                         <div>
                             {companyInfo ? (
                                 <CompanyInfo

@@ -75,68 +75,76 @@ const SearchForm = ({ passDataToParent, passDataToGrandparent }) => {
     return (
         <div className='mx-6 my-8'>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 w-full">
                     {/* Date Picker Field */}
                     <FormField
                         control={form.control}
                         name="date"
                         render={({ field }) => (
                             <FormItem className="flex flex-col">
-                                <FormLabel className="text-gray-700 font-medium">Please choose a date</FormLabel>
+                                <FormLabel className="text-gray-700 font-medium">Date</FormLabel>
                                 <FormControl>
                                     <DatePicker
                                         selected={field.value}
                                         onChange={field.onChange}
                                         dateFormat="MMMM d, yyyy"
-                                        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
+                                        className="w-full text-sm p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
                                         placeholderText="Pick a date"
                                         maxDate={new Date()} // Prevent future dates
+                                        showMonthYearPicker={false} // Make sure to allow day selection
+                                        showFullMonthYearPicker={false}
+
                                     />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
+
+                    <div className="flex flex-row space-x-5">  {/* Use space-x-5 for horizontal spacing */}
+                        {/* Stock Symbol Input Field */}
+                        <FormField
+                            control={form.control}
+                            name="stockSymbol"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col w-1/2">  {/* Ensure each field takes up half the space */}
+                                    <FormLabel className="text-gray-700 font-medium">Stock Symbol</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            type="string"
+                                            placeholder="AAPL"
+                                            className="w-full text-sm p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Amount Input Field */}
+                        <FormField
+                            control={form.control}
+                            name="amount"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col w-1/2">  {/* Ensure each field takes up half the space */}
+                                    <FormLabel className="text-gray-700 font-medium">Amount</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            type="number"
+                                            placeholder="10000"
+                                            className="w-full text-sm p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
 
                     {/* Stock Symbol Input Field */}
-                    <FormField
-                        control={form.control}
-                        name="stockSymbol"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-col">
-                                <FormLabel className="text-gray-700 font-medium">Please input the stock symbol</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        type="string"
-                                        placeholder="ex: AAPL"
-                                        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
 
-                    {/* Amount Input Field */}
-                    <FormField
-                        control={form.control}
-                        name="amount"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-col">
-                                <FormLabel className="text-gray-700 font-medium">Please input the amount</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        type="number"
-                                        placeholder="Amount"
-                                        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
 
 
 

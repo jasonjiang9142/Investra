@@ -46,14 +46,17 @@ const Navbar = ({ passDataToGrandparent }) => {
                     </div>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center space-x-8 bg-gray-100 px-8 py-2 rounded-full  duration-300">
+                    <div className="hidden md:flex items-center space-x-8 bg-gray-100 px-8 py-2 rounded-full duration-300 hover:bg-blue-100">
                         <a
                             href="#"
                             onClick={handleSearchClick}
-                            className="flex items-center font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+                            onMouseEnter={handleSearchClick}
+                            className="flex items-center font-semibold text-gray-900 hover:text-blue-600 transition-all duration-300 cursor-pointer"
                         >
                             <FaSearch className="mr-2 text-lg" /> {/* Adjust icon size for better balance */}
-                            <span className="hidden sm:inline">Search</span> {/* Hide text on small screens for a more compact design */}
+                            <span className="hidden sm:inline opacity-0 sm:opacity-100 transition-opacity duration-300 hover:opacity-100">
+                                Search
+                            </span> {/* Smooth transition for text visibility on hover */}
                         </a>
                     </div>
 
