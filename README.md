@@ -1,4 +1,4 @@
-# Stock Stimulator
+# Investra
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Docs](https://img.shields.io/badge/docs-read-blue)
 ![Repo Size](https://img.shields.io/github/repo-size/jasonjiang9142/Investra)
