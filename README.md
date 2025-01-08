@@ -19,6 +19,7 @@
 
 - **React** and **TailwindCSS**: Frontend interface, logic, and design
 - **SpringBoot** & **Spring**:  Application core logic and HTTP API call
+- **JUnit** & **Mockito**:  Application Unit Testing
 
 
 ## Preview
@@ -89,6 +90,22 @@ This project requires an **API key** for accessing the **Alpha Advantage API** a
    cd server
    ./mvnw spring-boot:run
    ```
+
+
+## Running Tests
+
+The project uses **JUnit5 and Mockito** for testing. Follow these steps to execute the tests:
+
+1. Navigate to the server directory:  
+   ```bash
+   cd server
+   ```
+
+2. Run the test  
+   ```bash
+   mvn test
+   ```
+
 
 ## Contributing
 
