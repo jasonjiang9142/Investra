@@ -43,34 +43,27 @@ Click the image to watch the demo video on YouTube.
 
 ## Environment Variables
 
-This project requires an **API key** for accessing the **Google Gemini API**. The key is stored securely in a `.env` file. Follow the steps below to configure your environment:
+This project requires an **API key** for accessing the **Alpha Advantage API** and the **Finnhub API**. The key is stored securely in a `.env` file. Follow the steps below to configure your environment:
 
 ### **Setup Instructions**
 
 1. **Create the `.env` file**  
-   Copy the provided `.env.template` file and rename it to `.env`:  
+   Copy the provided `.env.template` file in the server repository and rename it to `.env`:  
    ```bash
    cp .env.template .env
 2. Add Your API Key
    Open the .env file in your preferred editor and replace #your-google-api-key with your actual API key:
    ```bash
-   API_KEY=your-google-api-key
+   alpha_advantage_key=YOUR-API-KEY
+   finnhub_token=YOUR-API-KEY
    ```
 
    Example Configuration:
    ```bash
-   API_KEY=AIzaSyEXAMPLE12345
+   alpha_advantage_key=AIzaSyEXAMPLE12345
    ```
 3. Save and Close
    Make sure to save the changes before closing the file.
-
-### **Setup Instructions**
-   1. **In the `utils.js` file under /client/src/lib/utils.js**  
-   Replace the the provided backend server host from flask to the variable
-   ```bash
-   export const backendhost = "http://127.0.0.1:5000";
-   ```
-
 
 ## Installation
 
@@ -91,37 +84,13 @@ This project requires an **API key** for accessing the **Google Gemini API**. Th
    Backend 
    ```bash
    cd server
-   pip install -r requirements.txt
-   python index.py
+   ./mvnw spring-boot:run
    ```
-
-4. Install and configure the database:
-   Redis:
-   ```bash
-   sudo apt update
-   sudo apt install redis-server
-   sudo systemctl enable redis
-   sudo systemctl start redis
-   ```
-
-   Apache Cassandra:
-   ```bash
-   sudo apt update
-   sudo apt install cassandra
-   sudo systemctl enable cassandra
-   sudo systemctl start cassandra
-   ```
-
-   Verify installation:
-   ```bash
-   redis-cli ping
-   cqlsh
-   ```
-
 
 ## Contributing
 
-Contributions are welcome! If you’d like to improve JobsAI, please fork the repository, make changes, and submit a pull request.  
+Contributions are welcome! If you'd like to improve StockStimulator, please fork the repository, make changes, and submit a pull request.
+
 
 ## License
 
