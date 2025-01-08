@@ -1,10 +1,10 @@
 # Stock Stimulator
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Docs](https://img.shields.io/badge/docs-read-blue)
-![Repo Size](https://img.shields.io/github/repo-size/jasonjiang9142/StockStimulator)
+![Repo Size](https://img.shields.io/github/repo-size/jasonjiang9142/Investra)
 
 
-**Stock Stimulator** is a web application that allows users to calculate how much money they would have made if they had invested in a stock at a specific year. It enables stock comparisons by tracking the value progression of multiple stocks, providing key stock information, performance metrics, and recent news.
+**Investra** is a web application that allows users to calculate how much money they would have made if they had invested in a stock at a specific year. It enables stock comparisons by tracking the value progression of multiple stocks, providing key stock information, performance metrics, and recent news.
 
 ## Features
 
