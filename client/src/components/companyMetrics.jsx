@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const CompanyMetrics = ({ companyMetrics }) => {
+const CompanyMetrics = ({ companyMetrics, gridStyle = "grid-cols-4" }) => {
 
     const mapMetrics = {
         "5 Day Price Return Daily": companyMetrics["5DayPriceReturnDaily"] || "Data Not Available",
@@ -21,13 +21,15 @@ const CompanyMetrics = ({ companyMetrics }) => {
         "Total Debt/Total Equity Quarterly": companyMetrics["totalDebt/totalEquityQuarterly"] || "Data Not Available"
     };
     return (
-        <div className="m-6 py-5 mx-auto bg-gray-50 rounded-lg shadow-sm">
+        <div className="m-6 p-5 mx-auto bg-gray-50 rounded-lg shadow-sm">
             {
                 companyMetrics ? (
-                    <div cla>
+                    <div >
+                        <h1 className='text-center font-semibold text-lg py-4'>Company Metrics</h1>
+
                         {/* <h1 className="text-3xl font-bold text-center mb-6">Company Metrics</h1> */}
-                        <div className="grid grid-cols-4 gap-12 ">
-                            <div className="flex flex-col items-start p-6 border-r border-gray-400">
+                        <div className={`grid gap-12 ${gridStyle}`}>
+                            <div className="flex flex-col items-start p-6 border rounded-2xl border-gray-400">
 
                                 <span className="text-xs text-gray-500">5 Day Price Return Daily</span>
                                 <span className="text-lg font-semibold pb-3">{mapMetrics["5 Day Price Return Daily"]}</span>
@@ -39,7 +41,7 @@ const CompanyMetrics = ({ companyMetrics }) => {
                                 <span className="text-xs text-gray-500">Price Relative to S&P500 (52 Week)</span>
                                 <span className="text-lg font-semibold ">{mapMetrics["Price Relative to S&P500 (52 Week)"]}</span>
                             </div>
-                            <div className="flex flex-col items-start p-4 border-r border-gray-400">
+                            <div className="flex flex-col items-start p-4 border rounded-2xl border-gray-400">
                                 <span className="text-xs text-gray-500">Beta</span>
                                 <span className="text-lg font-semibold pb-3">{mapMetrics["Beta"]}</span>
                                 <span className="text-xs text-gray-500">10 Day Average Trading Volume</span>
@@ -49,7 +51,7 @@ const CompanyMetrics = ({ companyMetrics }) => {
                                 <span className="text-xs text-gray-500">52 Week High</span>
                                 <span className="text-lg font-semibold">{mapMetrics["52 Week High"]}</span>
                             </div>
-                            <div className="flex flex-col items-start p-4 border-r border-gray-400">
+                            <div className="flex flex-col items-start p-4 border rounded-2xl border-gray-400">
                                 <span className="text-xs text-gray-500">52 Week Low</span>
                                 <span className="text-lg font-semibold pb-3">{mapMetrics["52 Week Low"]}</span>
                                 <span className="text-xs text-gray-500">EPS Annual</span>
@@ -59,7 +61,7 @@ const CompanyMetrics = ({ companyMetrics }) => {
                                 <span className="text-xs text-gray-500">Net Profit Margin Annual</span>
                                 <span className="text-lg font-semibold">{mapMetrics["Net Profit Margin Annual"]}</span>
                             </div>
-                            <div className="flex flex-col items-start p-4">
+                            <div className="flex flex-col items-start border rounded-2xl border-gray-400 p-4">
                                 <span className="text-xs text-gray-500">Revenue Growth (3 Years)</span>
                                 <span className="text-lg font-semibold pb-3">{mapMetrics["Revenue Growth (3 Years)"]}</span>
                                 <span className="text-xs text-gray-500">Current Ratio Quarterly</span>

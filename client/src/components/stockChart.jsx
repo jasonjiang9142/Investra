@@ -23,7 +23,7 @@ ChartJS.register(
 
 
 
-const StockChart = ({ priceProgressionDates, priceProgressionRois }) => {
+const StockChart = ({ priceProgressionDates, priceProgressionRois, maxTicks = 20 }) => {
 
   // Process data for Chart.js
   const chartData = {
@@ -77,7 +77,7 @@ const StockChart = ({ priceProgressionDates, priceProgressionRois }) => {
           color: 'rgba(0, 0, 0, 0.1)',
         },
         ticks: {
-          maxTicksLimit: 20,  // Limit the number of ticks to 10 to prevent crowding
+          maxTicksLimit: maxTicks,  // Limit the number of ticks to 10 to prevent crowding
           autoSkip: true,  // Auto-skip labels to avoid overlapping
         },
       },
@@ -98,7 +98,7 @@ const StockChart = ({ priceProgressionDates, priceProgressionRois }) => {
     <div className="px-4 py-3">
       {priceProgressionDates.length > 0 && priceProgressionRois.length > 0 ? (
         <div>
-          <h1 className='text-center font-semibold text-lg pb-4'>Your Returns Throughout the Years</h1>
+          <h1 className='text-center font-semibold text-lg pb-4'>Your Total Returns Throughout the Years</h1>
           <div className="relative w-10/12 mx-auto">
             <Line data={chartData} options={chartOptions} />
           </div>

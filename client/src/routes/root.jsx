@@ -318,7 +318,7 @@ const Root = () => {
 
                         <div>
                             {companyMetrics ? (
-                                <CompanyMetrics companyMetrics={companyMetrics} />
+                                <CompanyMetrics companyMetrics={companyMetrics} gridStyle="grid-cols-4" />
                             ) : (
                                 <LoadingState message="Fetching company metrics..." />
                             )}
@@ -326,7 +326,7 @@ const Root = () => {
 
                         <div>
                             {companyInfo && companyNews.length > 0 ? (
-                                <CompanyNews companyNews={companyNews} companyInfo={companyInfo} />
+                                <CompanyNews companyNews={companyNews} companyInfo={companyInfo} gridStyle="grid-cols-2" />
                             ) : (
                                 <LoadingState message="Fetching news articles..." />
                             )}

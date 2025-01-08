@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const CompanyInfo = ({ companyInfo, startDate, endDate, currentPrice, previousPrice, returnOnInvestment, amount }) => {
+const CompanyInfo = ({ companyInfo, startDate, endDate, currentPrice, previousPrice, returnOnInvestment, amount, textSize = 'text-2xl' }) => {
 
 
 
@@ -8,8 +8,6 @@ const CompanyInfo = ({ companyInfo, startDate, endDate, currentPrice, previousPr
         const options = { year: 'numeric', month: 'long', day: '2-digit' };
         return new Date(dateString).toLocaleDateString('en-US', options);
     };
-
-
 
     const isPositiveROI = returnOnInvestment >= 0;
     const roi_percent = (returnOnInvestment / amount) * 100;
@@ -33,7 +31,7 @@ const CompanyInfo = ({ companyInfo, startDate, endDate, currentPrice, previousPr
                                 rel="noopener noreferrer"
                                 className=""
                             >
-                                <h1 className="text-3xl font-bold text-gray-800">{companyInfo.name} ({companyInfo.ticker})</h1>
+                                <h1 className={`${textSize} font-bold text-gray-800`}>{companyInfo.name} ({companyInfo.ticker})</h1>
                             </a>
                         </div>
                     </div>
@@ -45,7 +43,7 @@ const CompanyInfo = ({ companyInfo, startDate, endDate, currentPrice, previousPr
                             <div className="gap-4 flex flex-row items-center pb-4">
 
                                 <p className="text-black-500 text-sm font-bold mt-1">Return: </p>
-                                <p className={`text-2xl font-semibold ${isPositiveROI ? 'text-[#037b66]' : 'text-red-800'}`}>
+                                <p className={`${textSize}  font-semibold ${isPositiveROI ? 'text-[#037b66]' : 'text-red-800'}`}>
                                     ${returnOnInvestment.toFixed(2)} ({roi_percent.toFixed(2)}%)
                                 </p>
 
@@ -53,13 +51,13 @@ const CompanyInfo = ({ companyInfo, startDate, endDate, currentPrice, previousPr
 
                             <div className="gap-10 flex">
                                 <div>
-                                    <p className="text-black text-2xl font-bold"> ${previousPrice.toFixed(2)}</p>
+                                    <p className={`${textSize} text-black font-bold`}> ${previousPrice.toFixed(2)}</p>
                                     <p className="text-black-500 text-xs mt-1">Price at start: {formatDate(startDate)} at 4:00:00 PM EST</p>
 
 
                                 </div>
                                 <div>
-                                    <p className="text-black  text-2xl font-bold">${currentPrice.toFixed(2)}</p>
+                                    <p className={`${textSize} text-black font-bold`}>${currentPrice.toFixed(2)}</p>
                                     <p className="text-black-500 text-xs mt-1">Price at end: {formatDate(endDate)} at 4:00:00 PM EST</p>
 
                                 </div>
