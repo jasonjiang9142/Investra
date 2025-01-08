@@ -129,7 +129,7 @@ const CompareForm = ({ passDataToParent, passDataToGrandparent }) => {
                                         <Input
                                             {...field}
                                             type="string"
-                                            placeholder="AAPL"
+                                            placeholder="IBM"
                                             className="w-full text-sm p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-300"
                                         />
                                     </FormControl>

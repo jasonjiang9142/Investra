@@ -49,11 +49,11 @@ public class PriceProgressionController {
                     throw new IllegalStateException("API key is missing in environment variables.");
                 }
 
-                // String url =
-                // "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" +
-                // symbol + "&outputsize=full&apikey=" + alpha_advantage_key;
+                String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" +
+                        symbol + "&outputsize=full&apikey=" + alpha_advantage_key;
 
-                String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo";
+                // String url =
+                // "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo";
 
                 // RestTemplate restTemplate = new RestTemplate();
                 Map<String, Object> result = restTemplate.getForObject(url, Map.class);

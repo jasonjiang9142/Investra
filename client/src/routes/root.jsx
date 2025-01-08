@@ -199,10 +199,11 @@ const Root = () => {
 
     return (
         <div>
+            <Navbar passDataToGrandparent={passDataToGrandparent} />
             {!hasSearched ? (
-                <div className="min-h-screen bg-gray-50 p-16 flex flex-col items-center">
+                <div className="min-h-screen bg-gray-50 p-12 flex flex-col items-center">
                     {/* Header */}
-                    <header className="w-full max-w-4xl mb-8 text-center">
+                    <header className="w-full max-w-4xl mb-1 text-center">
                         <h1 className="text-4xl font-bold text-gray-800 mb-4">Stock Growth Simulator</h1>
                         <p className="text-gray-500 text-lg">
                             Calculate how much your investment in your favorite stock would be worth today!
@@ -286,7 +287,7 @@ const Root = () => {
             ) : (
                 <div>
 
-                    <Navbar passDataToGrandparent={passDataToGrandparent} />
+
 
                     <div className="mx-32 my-4">
                         <div>
