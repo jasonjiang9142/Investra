@@ -23,15 +23,17 @@
 
 ## Preview
 <p align="center" width="100%">
-  <img src="preview/Preview1.png" width="49%"/>
-    <img src="preview/Preview2.png" width="49%"/>
+  <img src="Preview/Preview1.png" width="49%"/>
+    <img src="Preview/Preview2.png" width="49%"/>
 </p>
 
 <p align="center" width="100%">
-  <img src="preview/Preview3.png" width="65%"/>
-  <img src="preview/Preview5.png" width="48%"/>
-  <img src="preview/Preview6.png" width="48%"/>
-  <img src="preview/Preview4.png" width="48%"/>
+  <img src="Preview/Preview3.png" width="65%"/>
+    <img src="Preview/Preview4.png" width="48%"/>
+  <img src="Preview/Preview5.png" width="48%"/>
+  <img src="Preview/Preview6.png" width="48%"/>
+  <img src="Preview/Preview7.png" width="48%"/>
+
 </p>
 
 ## Demo Video
