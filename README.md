@@ -31,7 +31,7 @@
 <p align="center" width="100%">
   <img src="Preview/Preview3.png" width="65%"/>
     <img src="Preview/Preview4.png" width="48%"/>
-  <img src="Preview/Preview5.png" width="48%"/>
+  <img src="Preview/Preview5.png" width="65%"/>
   <img src="Preview/Preview6.png" width="48%"/>
   <img src="Preview/Preview7.png" width="48%"/>
 
